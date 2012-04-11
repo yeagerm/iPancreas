@@ -20,6 +20,9 @@ function loadDay(timeplot, i, dex, ping) {
     var eventSource = new Timeplot.DefaultEventSource();
     var eventSource2 = new Timeplot.DefaultEventSource();
 
+    var pingColor = new Timeplot.Color("FFFFFF");
+    pingColor.transparency(0.01);
+
     var timegeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: "#000000",
         axisLabelsPlacement: "top",
@@ -34,24 +37,22 @@ function loadDay(timeplot, i, dex, ping) {
 
     var plotInfo = [
         Timeplot.createPlotInfo({
+            id: "plot1",
+            dataSource: new Timeplot.ColumnSource(eventSource,1),
+            valueGeometry: valuegeometry,
+            timeGeometry: timegeometry,
+            dotColor: "#FF0000",
+            fillColor: "#cc8080",
+            showValues: true
+        }),
+       Timeplot.createPlotInfo({
             id: "plot2",
             dataSource: new Timeplot.ColumnSource(eventSource2,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
-            // secret to getting a "transparent" line for a set of data is to plot it *first*
-            lineColor: "#FFFFFF",
+            lineColor: pingColor,
             dotColor: "#0000FF"
         }),
-	Timeplot.createPlotInfo({
-	    id: "plot1",
-	    dataSource: new Timeplot.ColumnSource(eventSource,1),
-	    // defines upper and lower bounds for graph
-	    valueGeometry: valuegeometry,
-	    timeGeometry: timegeometry,
-            dotColor: "#FF0000",
-	    fillColor: "#cc8080",
-            showValues: true
-	}),
         Timeplot.createPlotInfo({
             id: "plot3",
             timeGeometry: timegeometry,
