@@ -20,7 +20,7 @@ class Log():
 
         self.soup.insert(0, event)
 
-def parse_xml(xml_name):
+def parse_dexcom(xml_name):
     xml_file = open(xml_name, 'rU')
     xml_out = open(xml_name.replace('.xml','.txt'), 'w')
     xsoup = BeautifulStoneSoup(xml_file, selfClosingTags=['Meter','Sensor'])
@@ -28,7 +28,7 @@ def parse_xml(xml_name):
     for reading in readings:
         print >> xml_out, reading['displaytime'][:-4] + "," + reading['value']
 
-def parse_csv(csv_name):
+def parse_ping(csv_name):
     csv_file = open(csv_name, 'rb')
     csv_out = open(csv_name.replace('.csv', '.txt'), 'w')
     reader = csv.reader(csv_file)
@@ -55,15 +55,15 @@ def parse_csv(csv_name):
             
 def main():
     parser = argparse.ArgumentParser(description='Process the input files.')
-    parser.add_argument('-x', '--xml', action = 'store', dest = "xml_name", help='name of an xml file')
-    parser.add_argument('-c', '--csv', action = 'store', dest = "csv_name", help='name of a csv file')
+    parser.add_argument('-d', '--dexcom', action = 'store', dest = "dex_name", help='name of Dexcom xml file')
+    parser.add_argument('-p', '--ping', action = 'store', dest = "ping_name", help='name of OneTouch Ping csv file')
 
     args = parser.parse_args()
 
-    parse_xml(args.xml_name)
+    parse_dexcom(args.dex_name)
 
     # later make this a for loop and make argparser accept more than one csv
-    parse_csv(args.csv_name)
+    parse_ping(args.ping_name)
 
 if __name__=="__main__":
     main()
