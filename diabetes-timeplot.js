@@ -12,12 +12,13 @@ function onLoad(days) {
     var timeplot;
     for (i = 0; i < days; i++) {
         createPlot(document, i);
-        loadDay(timeplot, i, "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/events" + i + ".xml");
+        loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/events" + i + ".xml");
     }
 }
 
-function loadDay(timeplot, i, dex, ping, events) {
-    var eventSource = new Timeplot.DefaultEventSource();
+function loadDay(timeplot, i, endpoints, dex, ping, events) {
+    var eventSource0 = new Timeplot.DefaultEventSource();
+    var eventSource1 = new Timeplot.DefaultEventSource();
     var eventSource2 = new Timeplot.DefaultEventSource();
     var eventSource3 = new Timeplot.DefaultEventSource();
 
@@ -29,7 +30,7 @@ function loadDay(timeplot, i, dex, ping, events) {
 
     var timegeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: "#000000",
-        axisLabelsPlacement: "top",
+        axisLabelsPlacement: "top"
     })
 
     var valuegeometry = new Timeplot.DefaultValueGeometry({
@@ -41,8 +42,16 @@ function loadDay(timeplot, i, dex, ping, events) {
 
     var plotInfo = [
         Timeplot.createPlotInfo({
+            id: "plot0",
+            dataSource: new Timeplot.ColumnSource(eventSource0,1),
+            valueGeometry: valuegeometry,
+            timeGeometry: timegeometry,
+            lineColor: pingColor,
+            dotColor: pingColor
+        }),    
+       Timeplot.createPlotInfo({
             id: "plot1",
-            dataSource: new Timeplot.ColumnSource(eventSource,1),
+            dataSource: new Timeplot.ColumnSource(eventSource1,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: "#615A55",
@@ -56,7 +65,8 @@ function loadDay(timeplot, i, dex, ping, events) {
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: pingColor,
-            dotColor: "#EA2C46"
+            dotColor: "#EA2C46",
+            //showValues: true
         }),
         Timeplot.createPlotInfo({
             id: "plot3",
@@ -67,7 +77,8 @@ function loadDay(timeplot, i, dex, ping, events) {
     ];
 
     timeplot = Timeplot.create(document.getElementById("diabetes-timeplot-" + i), plotInfo);
-    timeplot.loadText(dex, ",", eventSource);
+    timeplot.loadText(endpoints, ",", eventSource0);
+    timeplot.loadText(dex, ",", eventSource1);
     timeplot.loadText(ping, ",", eventSource2);
     timeplot.loadXML(events, eventSource3);
 }
