@@ -243,7 +243,6 @@ def main():
     parser.add_argument('-d', '--dexcom', action = 'store', dest = "dex_name", help='name of Dexcom xml file')
     parser.add_argument('-p', '--ping', action = 'store', dest = "ping_name", help='name of OneTouch Ping csv file')
     parser.add_argument('-y', '--yfd', action = 'store', dest = "yfd_name", help='name of your.FlowingData csv file')
-    parser.add_argument('-o', '--output', action = 'store', dest = "out_name", help='name/path of output XML file')
 
     args = parser.parse_args()
 
