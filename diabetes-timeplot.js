@@ -12,16 +12,20 @@ function onLoad(days) {
     var timeplot;
     for (i = 0; i < days; i++) {
         createPlot(document, i);
-        loadDay(timeplot, i, "dex/dex" + i + ".txt", "ping/ping" + i + ".txt");
+        loadDay(timeplot, i, "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/events" + i + ".xml");
     }
 }
 
-function loadDay(timeplot, i, dex, ping) {
+function loadDay(timeplot, i, dex, ping, events) {
     var eventSource = new Timeplot.DefaultEventSource();
     var eventSource2 = new Timeplot.DefaultEventSource();
+    var eventSource3 = new Timeplot.DefaultEventSource();
 
     var pingColor = new Timeplot.Color("FFFFFF");
     pingColor.transparency(0.01);
+
+    var dexFill = new Timeplot.Color("615A55");
+    dexFill.transparency(0.75);
 
     var timegeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: "#000000",
@@ -41,8 +45,9 @@ function loadDay(timeplot, i, dex, ping) {
             dataSource: new Timeplot.ColumnSource(eventSource,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
-            dotColor: "#FF0000",
-            fillColor: "#cc8080",
+            lineColor: "#615A55",
+            dotColor: "#615A55",
+            fillColor: dexFill,
             showValues: true
         }),
        Timeplot.createPlotInfo({
@@ -51,20 +56,20 @@ function loadDay(timeplot, i, dex, ping) {
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: pingColor,
-            dotColor: "#0000FF"
+            dotColor: "#EA2C46"
         }),
         Timeplot.createPlotInfo({
             id: "plot3",
             timeGeometry: timegeometry,
-            eventSource: eventSource2,
-            lineColor: "#03212E",
+            eventSource: eventSource3,
+            lineColor: "#33C7B8"
         })
     ];
 
     timeplot = Timeplot.create(document.getElementById("diabetes-timeplot-" + i), plotInfo);
     timeplot.loadText(dex, ",", eventSource);
     timeplot.loadText(ping, ",", eventSource2);
-    //timeplot.loadXML(events, eventSource2);
+    timeplot.loadXML(events, eventSource3);
 }
 
 var resizeTimerID = null;
