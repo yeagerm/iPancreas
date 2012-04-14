@@ -55,7 +55,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: "#615A55",
-            dotColor: "#615A55",
+            //dotColor: "#615A55",
             fillColor: dexFill,
             showValues: true
         }),
@@ -65,14 +65,14 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: pingColor,
-            dotColor: "#EA2C46",
+            dotColor: "#33C7B8",
             //showValues: true
         }),
         Timeplot.createPlotInfo({
             id: "plot3",
             timeGeometry: timegeometry,
             eventSource: eventSource3,
-            lineColor: "#33C7B8"
+            lineColor: "#EA2C46"
         })
     ];
 
