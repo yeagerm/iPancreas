@@ -21,13 +21,15 @@ class Log():
     def __init__(self, out):
         """Initializes a Log object."""
         
-        self.file_base = "events"
+        self.file_base = "events/events"
 
         self.soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
 
         self.data = self.soup.data
 
         self.days = 0
+
+        self.dates = []
 
     def add_event(self, event):
         """Inserts a new event in the XML logbook file."""
@@ -43,6 +45,8 @@ class Log():
 
         last_day = self.get_date(events[0]['start'])
 
+        self.dates.append(self.get_date(events[0]['start']))
+
         soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
 
         day_data = soup.data
@@ -57,6 +61,7 @@ class Log():
                 self.days += 1
                 xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
                 last_day = self.get_date(event['start'])
+                self.dates.append(self.get_date(event['start']))
                 day_data.insert(0,event)
 
         print >> xml_out, soup.prettify()
@@ -65,6 +70,16 @@ class Log():
         """Return date from Timeline-compliant XML event start attribute."""
 
         return datetime.datetime.strptime(str[:10], "%Y-%m-%d")
+
+    def endpoints(self):
+        """Print daily-batched files of endpoints."""
+
+        count = 0
+
+        for day in self.dates:
+            out = open('endpoints/endpoints'+str(count)+'.txt','w')
+            print >> out, str(day) + ",25\n" + str(day.date()) + " 12:00:00,50\n" + str(day.date()) + " 23:59:59,25"
+            count += 1
 
 class YFD():
 
@@ -80,10 +95,8 @@ class YFD():
                 # t_str format is e.g., April 12, 2012, 4:10 p.m.
                 t_str = row[3].replace(".","")
                 t = datetime.datetime.strptime(t_str, "%B %d, %Y, %I:%M %p")
-                # new_t_str format should be e.g., 2012-01-01 00:00:00-05:00
+                # new_t_str format should be e.g., 2012-01-01 00:00:00
                 new_t_str = t.strftime("%Y-%m-%d %H:%M:%S")
-                # TODO: remove hard-coded timezone offset!
-                new_t_str = new_t_str + "-05:00"
                 c = Carbs(row[1], row[2], new_t_str, row[4])
                 c.create_event()
                 log.add_event(c.event)
@@ -133,7 +146,7 @@ class Dexcom():
 
     def __init__(self, xml_name):
 
-        self.file_base = "dex"
+        self.file_base = "dex/dex"
 
         self.xml_file = open(xml_name, 'rU')
 
@@ -165,7 +178,7 @@ class Ping():
 
     def __init__(self, csv_name):
 
-        self.file_base = "ping"
+        self.file_base = "ping/ping"
 
         self.reader = csv.reader(open(csv_name, 'rb'))
 
@@ -194,7 +207,7 @@ class Ping():
                 if "AM" in time_string and hour == "12":
                     hour = 0
                 dt = datetime.datetime(int(year), int(day_parts[0]), int(day_parts[1]), int(hour), int(minutes))
-                my_date = dt.isoformat().replace("T", " ") + "-05:00"
+                my_date = dt.isoformat().replace("T", " ")
                 value = float(row[2])
                 readings.append(my_date + "," + str(int(value)))
 
@@ -219,7 +232,7 @@ def insert_num_days(log):
 
     body = soup.body
 
-    body['onload'] = "onLoad(%d);" %log.days
+    body['onload'] = "onLoad(%d);" %(log.days+1)
 
     out = open("logbook.html", 'w')
 
@@ -249,6 +262,8 @@ def main():
     yfd.parse_yfd(l)
 
     insert_num_days(l)
+
+    l.endpoints()
 
 if __name__=="__main__":
     main()
