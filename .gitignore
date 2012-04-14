@@ -1,1 +1,5 @@
 .DS_Store
+dex/
+events/
+ping/
+endpoints/
