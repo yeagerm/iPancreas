@@ -18,7 +18,7 @@ BREAK = "&lt;br/&gt;"
 class Log():
     """A Timeline-compliant XML data structure for diabetes logbook data."""
 
-    def __init__(self, out):
+    def __init__(self):
         """Initializes a Log object."""
         
         self.file_base = "events/events"
@@ -150,22 +150,27 @@ class Dexcom():
 
         self.xml_file = open(xml_name, 'rU')
 
+        self.readings = self.get_readings()
+
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
 
         return datetime.datetime.strptime(reading['displaytime'][:10], "%Y-%m-%d")
 
+    def get_readings(self):
+        """Return array of XML objects each representing a blood glucose reading."""
+
+        xsoup = BeautifulStoneSoup(self.xml_file, selfClosingTags=['Meter','Sensor'])
+        return xsoup.findAll('sensor')
+
     def parse_dexcom(self):
         """Extract and write to daily-batched files data from a Dexcom .xml output file."""
 
         xml_out = open(self.file_base+'0.txt', 'w')
-        xsoup = BeautifulStoneSoup(self.xml_file, selfClosingTags=['Meter','Sensor'])
-        readings = xsoup.findAll('sensor')
-
-        last_day = self.get_date(readings[0])
+        last_day = self.get_date(self.readings[0])
         count = 0
 
-        for reading in readings:
+        for reading in self.readings:
             if self.get_date(reading) == last_day:
                 print >> xml_out, reading['displaytime'][:-4] + "," + reading['value']
             else:
@@ -254,7 +259,7 @@ def main():
 
     p.parse_ping()
 
-    l = Log(args.out_name)
+    l = Log()
 
     yfd = YFD(args.yfd_name)
 
