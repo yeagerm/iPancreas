@@ -5,6 +5,7 @@ import datetime
 import sys
 import re
 import csv
+import numpy
 
 # escaped HTML to open italics
 OI = "&lt;i&gt;"
@@ -150,6 +151,8 @@ class Dexcom():
 
         self.xml_file = open(xml_name, 'rU')
 
+        self.stats_writer = csv.writer(open(xml_name.replace('.xml', '_stats.csv'), 'w'))
+
         self.readings = self.get_readings()
 
     def get_date(self, reading):
@@ -163,8 +166,39 @@ class Dexcom():
         xsoup = BeautifulStoneSoup(self.xml_file, selfClosingTags=['Meter','Sensor'])
         return xsoup.findAll('sensor')
 
-    def parse_dexcom(self):
-        """Extract and write to daily-batched files data from a Dexcom .xml output file."""
+    def stats(self):
+        """Write to a single .csv file various per-day statistics from Dexcom data."""
+
+        last_day = self.get_date(self.readings[0])
+        count = 0
+
+        days = {}
+        days[count] = ([],[])
+
+        for reading in self.readings:
+            if self.get_date(reading) == last_day:
+                days[count][0].append(int(reading['value']))
+                if int(reading['value']) <= 65:
+                    days[count][1].append(int(reading['value']))
+            else:
+                count += 1
+                days[count] = ([int(reading['value'])],[])
+                if int(reading['value']) <= 65:
+                    days[count][1].append(int(reading['value']))
+                last_day = self.get_date(reading)
+
+        header = ['date', 'average', 'standard_deviation', 'percentage_low']
+
+        self.stats_writer.writerow(header)
+
+        for day in days.values():
+            ave = int(round(numpy.average(day[0])))
+            std = int(round(numpy.std(day[0])))
+            low = int(round(float(len(day[1]))/float(len(day[0])) * 100))
+            self.stats_writer.writerow([reading['displaytime'][:10],ave,std,low])
+
+    def logbook(self):
+        """Write to daily-batched files data from a Dexcom .xml output file."""
 
         xml_out = open(self.file_base+'0.txt', 'w')
         last_day = self.get_date(self.readings[0])
@@ -253,7 +287,9 @@ def main():
 
     d = Dexcom(args.dex_name)
 
-    d.parse_dexcom()
+    d.logbook()
+
+    d.stats()
 
     p = Ping(args.ping_name)
 
