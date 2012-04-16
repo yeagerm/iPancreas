@@ -28,6 +28,9 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
     var dexFill = new Timeplot.Color("615A55");
     dexFill.transparency(0.75);
 
+    var carbColor = new Timeplot.Color("EA2C46");
+    carbColor.transparency(0.5);
+
     var timegeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: "#000000",
         axisLabelsPlacement: "top"
@@ -42,7 +45,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
 
     var plotInfo = [
         Timeplot.createPlotInfo({
-            id: "plot0",
+            id: "endpoints",
             dataSource: new Timeplot.ColumnSource(eventSource0,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
@@ -50,7 +53,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
             dotColor: pingColor
         }),    
        Timeplot.createPlotInfo({
-            id: "plot1",
+            id: "dex",
             dataSource: new Timeplot.ColumnSource(eventSource1,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
@@ -59,20 +62,20 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
             fillColor: dexFill,
             showValues: true
         }),
-       Timeplot.createPlotInfo({
-            id: "plot2",
+        Timeplot.createPlotInfo({
+            id: "carbs",
+            timeGeometry: timegeometry,
+            eventSource: eventSource3,
+            lineColor: carbColor
+        }),
+        Timeplot.createPlotInfo({
+            id: "ping",
             dataSource: new Timeplot.ColumnSource(eventSource2,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: pingColor,
             dotColor: "#33C7B8",
             //showValues: true
-        }),
-        Timeplot.createPlotInfo({
-            id: "plot3",
-            timeGeometry: timegeometry,
-            eventSource: eventSource3,
-            lineColor: "#EA2C46"
         })
     ];
 
