@@ -3,3 +3,4 @@ dex/
 events/
 ping/
 endpoints/
+*.pyc
