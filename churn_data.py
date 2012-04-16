@@ -160,6 +160,11 @@ class Dexcom():
 
         return datetime.datetime.strptime(reading['displaytime'][:10], "%Y-%m-%d")
 
+    def get_date_str(self, reading):
+        """Return a string of the date from a Dexcom XML object representing a single BG reading."""
+
+        return reading['displaytime'][:10]
+
     def get_readings(self):
         """Return array of XML objects each representing a blood glucose reading."""
 
@@ -173,29 +178,37 @@ class Dexcom():
         count = 0
 
         days = {}
-        days[count] = ([],[])
+        days[count] = ([],[],[],[],self.get_date_str(self.readings[0]))
 
         for reading in self.readings:
             if self.get_date(reading) == last_day:
                 days[count][0].append(int(reading['value']))
                 if int(reading['value']) <= 65:
                     days[count][1].append(int(reading['value']))
+                elif int(reading['value']) > 65 and int(reading['value']) <= 140:
+                    days[count][2].append(int(reading['value']))
+                elif int(reading['value']) > 140:
+                    days[count][3].append(int(reading['value']))
+                else:
+                    print "I can't classify this BG reading: %s!" %reading['value']
             else:
                 count += 1
-                days[count] = ([int(reading['value'])],[])
+                days[count] = ([int(reading['value'])],[],[],[],self.get_date_str(reading))
                 if int(reading['value']) <= 65:
                     days[count][1].append(int(reading['value']))
                 last_day = self.get_date(reading)
 
-        header = ['date', 'average', 'standard_deviation', 'percentage_low']
+        header = ['date', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
 
         self.stats_writer.writerow(header)
 
         for day in days.values():
             ave = int(round(numpy.average(day[0])))
             std = int(round(numpy.std(day[0])))
-            low = int(round(float(len(day[1]))/float(len(day[0])) * 100))
-            self.stats_writer.writerow([reading['displaytime'][:10],ave,std,low])
+            low = float(len(day[1]))/float(len(day[0])) * 100
+            target = float(len(day[2]))/float(len(day[0]))*100
+            high = float(len(day[3]))/float(len(day[0]))*100
+            self.stats_writer.writerow([day[4],ave,std,low,target,high])
 
     def logbook(self):
         """Write to daily-batched files data from a Dexcom .xml output file."""
@@ -284,12 +297,6 @@ def main():
     parser.add_argument('-y', '--yfd', action = 'store', dest = "yfd_name", help='name of your.FlowingData csv file')
 
     args = parser.parse_args()
-
-    d = Dexcom(args.dex_name)
-
-    d.logbook()
-
-    d.stats()
 
     p = Ping(args.ping_name)
 
