@@ -98,7 +98,17 @@ class YFD():
                 t = datetime.datetime.strptime(t_str, "%B %d, %Y, %I:%M %p")
                 # new_t_str format should be e.g., 2012-01-01 00:00:00
                 new_t_str = t.strftime("%Y-%m-%d %H:%M:%S")
-                c = Carbs(row[1], row[2], new_t_str, row[4])
+                end = t + datetime.timedelta(0,5400)
+                if end.day != t.day:
+                    t2 = datetime.datetime(t.year, t.month,t.day+1,0,0)
+                    t2_str = t2.strftime("%Y-%m-%d %H:%M:%S")
+                    end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+                    c2 = Carbs(row[1], row[2], t2_str, end_str, row[4])
+                    c2.create_event()
+                    log.add_event(c2.event)
+                    end = datetime.datetime(t.year,t.month,t.day,23,59)
+                end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+                c = Carbs(row[1], row[2], new_t_str, end_str, row[4])
                 c.create_event()
                 log.add_event(c.event)
 
@@ -106,13 +116,15 @@ class YFD():
 
 class Carbs():
 
-    def __init__(self, g, desc, t, conf):
+    def __init__(self, g, desc, s, e, conf):
 
         self.grams = g
 
         self.content = desc
 
-        self.time = t
+        self.start = s
+
+        self.end = e
 
         self.confidence = conf
 
@@ -137,7 +149,9 @@ class Carbs():
 
         self.event = soup.event
 
-        self.event['start'] = self.time
+        self.event['start'] = self.start
+
+        self.event['end'] = self.end
 
         self.event['title'] = "Carbs: %d" %int(float(self.grams))
 
