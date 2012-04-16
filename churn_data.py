@@ -390,6 +390,10 @@ def main():
 
     p.parse_ping()
 
+    d = Dexcom(args.dex_name)
+
+    d.logbook()
+
     l = Log()
 
     yfd = YFD(args.yfd_name)
