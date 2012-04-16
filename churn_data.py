@@ -153,12 +153,21 @@ class Dexcom():
 
         self.stats_writer = csv.writer(open(xml_name.replace('.xml', '_stats.csv'), 'w'))
 
+        self.bubble_writer = csv.writer(open(xml_name.replace('.xml', '_bubble.csv'), 'w'))
+
         self.readings = self.get_readings()
 
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
 
         return datetime.datetime.strptime(reading['displaytime'][:10], "%Y-%m-%d")
+
+    def get_time(self, reading):
+        """Return the hour of the day as a 24-hr clock integer from a Dexcom XML object representing a single BG reading."""
+
+        t = datetime.datetime.strptime(reading['displaytime'][:-4], "%Y-%m-%d %H:%M:%S")
+
+        return t.hour
 
     def get_date_str(self, reading):
         """Return a string of the date from a Dexcom XML object representing a single BG reading."""
@@ -196,6 +205,12 @@ class Dexcom():
                 days[count] = ([int(reading['value'])],[],[],[],self.get_date_str(reading))
                 if int(reading['value']) <= 65:
                     days[count][1].append(int(reading['value']))
+                elif int(reading['value']) > 65 and int(reading['value']) <= 140:
+                    days[count][2].append(int(reading['value']))
+                elif int(reading['value']) > 140:
+                    days[count][3].append(int(reading['value']))
+                else:
+                    print "I can't classify this BG reading: %s!" %reading['value']
                 last_day = self.get_date(reading)
 
         header = ['date', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
@@ -209,6 +224,79 @@ class Dexcom():
             target = float(len(day[2]))/float(len(day[0]))*100
             high = float(len(day[3]))/float(len(day[0]))*100
             self.stats_writer.writerow([day[4],ave,std,low,target,high])
+
+    def bubble_chart(self):
+        """Export .csv that can be uploaded to Google Docs to make a bubble chart."""
+
+        header = ['id', 'time_of_day', 'blood_glucose', 'low_carb', 'freq']
+
+        self.bubble_writer.writerow(header)
+
+        eleven = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}]
+
+        twelve = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}]
+
+        bins = [40,60,80,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400,420]
+
+        for reading in self.readings:
+            hour = self.get_time(reading)
+            bg = int(reading['value'])
+            for bin in bins:
+                if bg < bin and bg > last_bin:
+                    bg = bin
+                    break
+                elif bg < bin and bin == 40:
+                    bg = bin
+                    break
+                last_bin = bin
+
+            if self.get_date_str(reading)[:4] == "2012":
+                try:
+                    twelve[hour][bg] += 1
+                except KeyError:
+                    twelve[hour][bg] = 1
+            else:
+                try:
+                    eleven[hour][bg] += 1
+                except KeyError:
+                    eleven[hour][bg] = 1
+
+        count = 0
+
+        for dct in twelve:
+            for val in dct:
+                group = self.get_class(val)
+                self.bubble_writer.writerow(['', count, val, group, dct[val]])
+            count += 1
+
+        count = 0
+
+        for dct in eleven:
+            for val in dct:
+                group = self.get_class(val)
+                self.bubble_writer.writerow(['', count, val, group, dct[val]])
+            count += 1
+
+    def get_class(self, bg):
+        """Return class descriptor of BG bin."""
+
+        low = ['low',40,60]
+
+        perfect = ['perfect',80,100,120]
+
+        target = ['target',140]
+
+        high = ['high',160,180]
+
+        too_high = ['too_high',200,220,240]
+
+        hyper = ['hyper',260,280,300,320,340,360,380,400,420]
+
+        lst = [low, perfect, target, high, too_high, hyper]
+
+        for l in lst:
+            if bg in l:
+                return l[0]
 
     def logbook(self):
         """Write to daily-batched files data from a Dexcom .xml output file."""
