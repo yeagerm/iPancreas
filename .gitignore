@@ -4,3 +4,10 @@ events/
 ping/
 endpoints/
 *.pyc
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
