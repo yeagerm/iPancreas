@@ -167,7 +167,13 @@ class Dexcom():
 
         self.stats_writer = csv.writer(open(xml_name.replace('.xml', '_stats.csv'), 'w'))
 
+        self.day_writer = csv.writer(open(xml_name.replace('.xml','_day.csv'), 'w'))
+
         self.bubble_writer = csv.writer(open(xml_name.replace('.xml', '_bubble.csv'), 'w'))
+
+        self.day_heat_writer = csv.writer(open(xml_name.replace('.xml','_day_heatmap.csv'), 'w'))
+
+        self.time_heat_writer = csv.writer(open(xml_name.replace('.xml', '_time_heatmap.csv'), 'w'))
 
         self.readings = self.get_readings()
 
@@ -239,10 +245,105 @@ class Dexcom():
             high = float(len(day[3]))/float(len(day[0]))*100
             self.stats_writer.writerow([day[4],ave,std,low,target,high])
 
+    def day_csv(self):
+        """Export .csv that can be made into day boxplots directly in R."""
+
+        header = ["timestamp","reading","weekday"]
+
+        self.day_writer.writerow(header)
+
+        for reading in self.readings:
+            weekday = self.get_date(reading).weekday()
+            bg = int(reading['value'])
+            time = reading['displaytime']
+            self.day_writer.writerow([time,bg,weekday])
+
+    def day_heatmap(self):
+        """Export .csv that can be made into a day-of-the-week heatmap directly in R."""
+
+        header = ["","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+
+        self.day_heat_writer.writerow(header)
+
+        bins = range(50,420,10)
+
+        bin_dicts = {}
+
+        for bin in bins:
+            bin_dicts[bin] = {}
+            for i in range(7):
+                bin_dicts[bin][i] = 0
+
+        for reading in self.readings:
+            weekday = self.get_date(reading).weekday()
+            bg = int(reading['value'])
+            for bin in bins:
+                if bg < bin and bg > last_bin:
+                    bg = bin
+                    break
+                elif bg < bin and bin == 50:
+                    bg = bin
+                    break
+                last_bin = bin
+
+            bin_dicts[bg][weekday] += 1
+
+        kys = bin_dicts.keys()
+
+        kys.sort()
+
+        for k in kys:
+            dct = bin_dicts[k]
+            lst = [k]
+            for day in dct:
+                lst.append(dct[day])
+            self.day_heat_writer.writerow(lst)
+
+    def time_heatmap(self):
+        """Export .csv that can be made into a time-of-day heatmap directly in R."""
+
+        header = ["","midnight", "1 a.m.", "2 a.m.", "3 a.m.", "4 a.m.", "5 a.m.", "6 a.m.", "7 a.m.", "8 a.m.", "9 a.m.", "10 a.m.", "11 a.m.","noon", "1 p.m.", "2 p.m.", "3 p.m.", "4 p.m.", "5 p.m.", "6 p.m.", "7 p.m.", "8 p.m.", "9 p.m.", "10 p.m.", "11 p.m."]
+
+        self.time_heat_writer.writerow(header)
+
+        bins = range(50,420,10)
+
+        bin_dicts = {}
+
+        for bin in bins:
+            bin_dicts[bin] = {}
+            for i in range(24):
+                bin_dicts[bin][i] = 0
+
+        for reading in self.readings:
+            hour = self.get_time(reading)
+            bg = int(reading['value'])
+            for bin in bins:
+                if bg < bin and bg > last_bin:
+                    bg = bin
+                    break
+                elif bg < bin and bin == 50:
+                    bg = bin
+                    break
+                last_bin = bin
+
+            bin_dicts[bg][hour] += 1
+
+        kys = bin_dicts.keys()
+
+        kys.sort()
+
+        for k in kys:
+            dct = bin_dicts[k]
+            lst = [k]
+            for hour in dct:
+                lst.append(dct[hour])
+            self.time_heat_writer.writerow(lst)
+
     def bubble_chart(self):
         """Export .csv that can be uploaded to Google Docs to make a bubble chart."""
 
-        header = ['id', 'time_of_day', 'blood_glucose', 'low_carb', 'freq']
+        header = ['id', 'time_of_day', 'blood_glucose', 'group', 'freq']
 
         self.bubble_writer.writerow(header)
 
