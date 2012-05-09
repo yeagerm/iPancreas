@@ -1,0 +1,317 @@
+\documentclass[handout]{beamer}
+\usetheme{CambridgeUS}
+\usefonttheme{structurebold}
+\usecolortheme{seahorse}
+\setbeamertemplate{caption}[numbered]
+\setbeamerfont{caption}{size=\footnotesize}
+% following suppresses navigation symbols
+\setbeamertemplate{navigation symbols}{}
+% following gets page numbers to show up
+\setbeamertemplate{footline}[frame number]{}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{question}{Question}
+\author{Jana E. Beck}
+\title{Quantifying Diabetes}
+\subtitle{Lessons learned from 100,000+ blood glucose readings}
+\date{May 8, 2012}
+\usepackage{pgfpages}
+\pgfpagesuselayout{4 on 1}[letterpaper,border shrink=5mm,landscape]
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{hyperref}
+\hypersetup{colorlinks,urlcolor=blue,linkcolor=black}
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\section{Background}
+
+\begin{frame}
+  \frametitle{Type 1 Diabetes}
+
+  \begin{itemize}
+  \item an auto-immune disease \pause \\
+    = the body's immune system attacks and kills the insulin-producing $\beta$-cells in the
+    pancreas
+  \pause
+  \item very little to no endogenous insulin production \pause \\
+    = dependent on synthetic insulin
+  \pause
+  \item insulin dosing \pause \textbf{is not easy!}
+    \begin{itemize}
+    \pause
+    \item basal insulin
+    \pause
+    \item bolus insulin \pause \\
+      = matched to carbohydrates consumed, roughly
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{My Type 1 Diabetes}
+
+  \begin{itemize}
+  \item diagnosed 12/2003 at age 19
+  \item as of 11/2006, positive C-peptide \pause \\
+    = still producing \textit{some} insulin
+  \pause
+  \item using an insulin pump since 12/2006:
+    \begin{center}
+      \includegraphics[angle=180,width=.5\linewidth]{ping.jpg}
+    \end{center}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{My Type 1 Diabetes, Cont'd}
+
+  started using a Dexcom Continuous Glucose Monitor last year:
+    \begin{center}
+      \includegraphics[width=.3\linewidth]{dexcom1.jpg}
+      \hskip .05in
+      \pause
+      \includegraphics[width=.3\linewidth]{dexcom2.jpg}
+      \pause
+      \hskip .05in
+      \includegraphics[width=.3\linewidth]{dexcom3.jpg}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{About the Dexcom}
+
+  \begin{itemize}
+  \item the Dexcom provides:
+  \uncover<1->{
+    \begin{itemize}
+    \item \uncover<2->{an (approximate) blood glucose reading every five minutes}
+    \item \uncover<3->{an arrow indicating}
+    \begin{itemize}
+    \item \uncover<4->{trend (= up, down, or steady)}
+    \item \uncover<5->{rate-of-change}
+    \end{itemize}
+    \item \uncover<6->{audible and/or vibrating alerts when blood glucose is}
+      \begin{itemize}
+      \item \uncover<7->{too high}
+      \item \uncover<8->{too low}
+      \item \uncover<9->{or changing \textit{very} rapidly}
+      \end{itemize}
+    \item \uncover<10->{ability to download data!}
+    \end{itemize}}
+  \end{itemize}
+
+  \begin{overprint}
+  \uncover<0-4>{\hfill\includegraphics[width=.4\linewidth]{dexcom3.jpg}}\uncover<5->{\hfill\includegraphics[width=.4\linewidth]{double_down.jpg}}
+  \end{overprint}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Blood Glucose Management}
+
+  \begin{itemize}
+  \item non-diabetics blood glucose: between 70-130 mg/dL
+  \pause
+  \item my goals:
+  \pause
+    \begin{itemize}
+    \item as many readings in the ``target'' non-diabetic range as possible
+    \pause
+    \item keep the \% of readings \textit{below} 65 mg/dL to a minimum
+    \pause
+    \item reduce standard deviation (as measured on a day's worth of readings)
+    \pause
+    \item reduce mean
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\section{What I Did}
+
+\begin{frame}
+  \frametitle{My Experiment}
+
+  \begin{itemize}
+  \item first experience with Dexcom \pause = \textit{shock}
+  \pause
+  \item next \pause = \textbf{frustration}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{My Experiment, Cont'd}
+
+  \begin{hypothesis}
+    Carbohydrate restriction is an effective way to improve blood glucose outcomes.
+  \end{hypothesis}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Inspiration}
+
+\href{http://www.amazon.com/Good-Calories-Bad-Challenging-Conventional/dp/1400040787}{\textit{Good Calories, Bad Calories} by Gary Taubes}\\
+\vskip .5in
+\pause
+
+\begin{quote}
+When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat whatever you want, just make sure you cover your glucose with insulin,'' it's like telling a firefighter, ``Just go ahead and pour as much gasoline as you like on that fire you’re trying to put out, as long as you cover it with enough water.''
+\end{quote} \hskip .5in ---
+\href{http://asweetlife.org/a-sweet-life-staff/featured/the-ketogenic-diet-and-peter-attias-war-on-insulin/24184/}{Dr. Peter Attia}
+  
+\end{frame}
+
+\section{How I Did It}
+
+\begin{frame}
+  \frametitle{Tools}
+  
+  \begin{itemize}
+  \item Dexcom data export formats:
+    \begin{itemize}
+    \item XML files, useful for manipulating in Python with \href{http://www.crummy.com/software/BeautifulSoup/}{BeautifulSoup}
+    \item tab-delimited .csv files, useful for direct importing into R
+    \end{itemize}
+  \pause
+  \item in \href{http://www.r-project.org/}{R}:
+    \begin{itemize}
+    \item built-in non-parametric statistical functions
+    \item built-in plotting functions: boxplot(), etc.
+    \item \href{http://had.co.nz/ggplot2/}{ggplot2}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{What I Learned}
+
+\begin{frame}
+  \frametitle{Statistical Significance}
+
+  \begin{question}
+     Did adopting a carbohydrate-restricted diet starting January 1st, 2012 result in a statistically significant difference in
+     blood glucose?
+  \end{question}
+  \pause
+  Wilcoxon rank-sum test:
+  \begin{itemize}
+  \pause
+  \item similar to the Student's t-test, but for non-parametric (= non-normally-distributed) data
+  \pause
+  \item \textbf{\texttt{p-value < 2.2e-16}}
+  \pause
+  \item \textbf{Conclusion:} change in diet resulted in significant (negative) change in blood glucose values
+  \pause
+  \item estimate of the median of the difference between a sample from regular diet blood glucose data and a sample from low-carb
+    diet data is \textbf{about $-$19 mg/dL}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Violin Plot}
+  
+  \begin{center}
+    \includegraphics[height=0.95\textheight]{dexcom_violin.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Daily Mean over Time}
+
+  \begin{center}
+    \includegraphics[width=\textwidth]{mean_blood_glucose.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Daily Std. Deviation over Time}
+  
+  \begin{center}
+    \includegraphics[width=\textwidth]{standard_deviation.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Daily \% Low over Time}
+  
+  \begin{center}
+    \includegraphics[width=\textwidth]{daily_low.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Daily Percentages over Time}
+  
+  \begin{center}
+    \includegraphics[width=\textwidth]{percentages.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing Change: Heatmaps}
+  
+  \begin{center}
+    \includegraphics[width=0.45\linewidth]{oct.jpg}
+    \hskip .05in
+    \pause
+    \includegraphics[width=0.45\linewidth]{jan.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Patterns: Day of the Week}
+  
+  \begin{center}
+    \includegraphics[height=0.90\textheight]{day_heatmap.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Patterns: Day of the Week Cont'd}
+  
+  \begin{center}
+    \includegraphics[width=\textwidth]{day_boxplots.jpg}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Patterns: Time of Day}
+  
+  \begin{center}
+    \includegraphics[height=0.9\textheight]{all_heatmap.jpg}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Thanks!}
+
+  Contact: \href{jana.eliz.beck@gmail.com}{\texttt{jana.eliz.beck@gmail.com}}\\
+
+  \vskip .5in
+
+  Upcoming Project: \href{https://github.com/jebeck/iPancreas}{\texttt{https://github.com/jebeck/iPancreas}}\\
+
+  \vskip .1in
+
+  \small{(Description here: \href{http://jebeck.github.com/iPancreas/}{\texttt{http://jebeck.github.com/iPancreas/}})}
+
+\end{frame}
+
+\end{document}
