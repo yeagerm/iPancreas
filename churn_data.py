@@ -19,10 +19,10 @@ BREAK = "&lt;br/&gt;"
 class Log():
     """A Timeline-compliant XML data structure for diabetes logbook data."""
 
-    def __init__(self):
+    def __init__(self, name):
         """Initializes a Log object."""
         
-        self.file_base = "events/events"
+        self.file_base = "events/" + name + "_events"
 
         self.soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
 
@@ -46,12 +46,13 @@ class Log():
 
         last_day = self.get_date(events[0]['start'])
 
-        self.dates.append(self.get_date(events[0]['start']))
+        self.dates.append(last_day)
 
         soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
 
         day_data = soup.data
 
+        # REDO!
         for event in events:
             if self.get_date(event['start']) == last_day:
                 day_data.insert(0, event)
@@ -60,10 +61,19 @@ class Log():
                 soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
                 day_data = soup.data
                 self.days += 1
-                xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
                 last_day = self.get_date(event['start'])
+                prev = self.dates[-1].date()
+                if (last_day.date() - prev) > datetime.timedelta(1):
+                    diff = (last_day.date() - prev).days
+                    while diff > 1:
+                        self.days += 1
+                        xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
+                        print >> xml_out, ""
+                        diff = diff - 1
+                else:
+                    day_data.insert(0,event)
+                xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
                 self.dates.append(self.get_date(event['start']))
-                day_data.insert(0,event)
 
         print >> xml_out, soup.prettify()
 
@@ -88,31 +98,174 @@ class YFD():
 
         self.reader = csv.reader(open(csv_name, 'rb'), delimiter='\t')
 
-    def parse_yfd(self, log):
+    def get_timestamp(self, t_str):
+        """Return time from YFD time string."""
+
+        # t_str format is e.g., April 12, 2012, 4:10 p.m.
+        return datetime.datetime.strptime(t_str.replace(".",""), "%B %d, %Y, %I:%M %p")
+
+    def format_time(self, t):
+        """Return properly-formatted timestamp."""
+
+        # new_t_str format should be e.g., 2012-01-01 00:00:00
+        return t.strftime("%Y-%m-%d %H:%M:%S")
+
+    def event(self, row, t):
+        """Return an Event object."""
+
+        return Event(row[0], row[1], row[2], t, row[4])
+
+    def parse_yfd(self, carb_log, event_log, ex_log, hypo_log, bolus_log):
         """Extract and write to file data from a your.FlowingData tab-delim .csv file."""
 
         for row in self.reader:
+            try:
+                t = self.get_timestamp(row[3])
+                new_t_str = self.format_time(t)
+            except ValueError:
+                pass
             if row[0] == 'carbs':
-                # t_str format is e.g., April 12, 2012, 4:10 p.m.
-                t_str = row[3].replace(".","")
-                t = datetime.datetime.strptime(t_str, "%B %d, %Y, %I:%M %p")
-                # new_t_str format should be e.g., 2012-01-01 00:00:00
-                new_t_str = t.strftime("%Y-%m-%d %H:%M:%S")
+                # TODO: don't hardcode this 5400 seconds (= 90 minutes) for carb overlay time
                 end = t + datetime.timedelta(0,5400)
                 if end.day != t.day:
-                    t2 = datetime.datetime(t.year, t.month,t.day+1,0,0)
-                    t2_str = t2.strftime("%Y-%m-%d %H:%M:%S")
-                    end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+                    try:
+                        t2 = datetime.datetime(t.year, t.month,t.day+1,0,0)
+                    except ValueError:
+                        t2 = datetime.datetime(t.year, t.month+1,1,0,0)
+                    t2_str = self.format_time(t2)
+                    end_str = self.format_time(end)
                     c2 = Carbs(row[1], row[2], t2_str, end_str, row[4])
                     c2.create_event()
-                    log.add_event(c2.event)
+                    carb_log.add_event(c2.event)
                     end = datetime.datetime(t.year,t.month,t.day,23,59)
-                end_str = end.strftime("%Y-%m-%d %H:%M:%S")
+                end_str = self.format_time(end)
                 c = Carbs(row[1], row[2], new_t_str, end_str, row[4])
                 c.create_event()
-                log.add_event(c.event)
+                carb_log.add_event(c.event)
+            elif row[0] == 'ate' or row[0] == 'gnite' or row[0] == 'gmorn' or row[0] == 'symlin' or row[0] == 'coffee':
+                e = self.event(row, new_t_str)
+                e.create_event()
+                event_log.add_event(e.event)
+            elif row[0] == 'ran':
+                #TODO: don't hardcode time estimate of 12 minutes out of the house per mile
+                secs = int(float(row[1])) * 12 * 60
+                end = t + datetime.timedelta(0,secs)
+                end_str = self.format_time(end)
+                r = Run(row[1], row[2], new_t_str, end_str)
+                r.create_event()
+                ex_log.add_event(r.event)
 
-        log.print_XML()
+        carb_log.print_XML()
+        event_log.print_XML()
+        ex_log.print_XML()
+
+class Event():
+
+    def __init__(self, cat, count , desc, t, tag):
+
+        self.type = cat
+
+        self.count = count
+
+        self.content = desc
+
+        self.time = t
+
+        self.hashtag = tag
+
+        self.event = None
+
+    def get_event_string(self):
+        """Return string describing event in plain English."""
+
+        if self.type == "ate":
+            return "%sAte:%s %s." %(OI, CLI, self.content)
+        elif self.type == "gnite":
+            return "This is when I went to sleep."
+        elif self.type == "gmorn":
+            return "This is when I woke up."
+        elif self.type == "symlin":
+            return "%sInjected:%s %s units of Symlin." %(OI, CLI, self.count)
+        elif self.type == "coffee":
+            return "%sDrank:%s %s cup(s) of coffee." %(OI, CLI, self.count)
+        elif self.type == "basal_rate_change":
+            return "Changed basal rate to %s units per 24 hours." %(self.count)
+        elif self.type == "ketones":
+            return "Urinalysis showed %s ketones." %(self.content)
+
+    def get_type(self):
+        """Return string translating event type into human-readable string."""
+
+        if self.type == "ate":
+            return "Low-carb meal/snack"
+        elif self.type == "gnite":
+            return "Bedtime"
+        elif self.type == "gmorn":
+            return "Waketime"
+        elif self.type == "symlin":
+            return "Symlin injection"
+        elif self.type == "coffee":
+            return "Coffee"
+
+    def create_event(self):
+        """Package content of generic Event object as a Timeline-compliant XML event."""
+
+        soup = BeautifulStoneSoup("<event/>")
+
+        self.event = soup.event
+
+        self.event['start'] = self.time
+
+        self.event['title'] = self.get_type()
+
+        self.event.string = self.get_event_string()
+
+class Run():
+
+    def __init__(self, miles, cat, s, e):
+
+        self.miles = miles
+
+        self.pace = cat
+
+        self.start = s
+
+        self.end = e
+
+        self.event = None
+
+    def get_pace(self):
+        """Return string translating pace category into human-readable string."""
+
+        if self.pace == "slow":
+            return "Greater than 10:15 minutes/mile pace."
+        elif self.pace == "sub1015":
+            return "Between 10:00 and 10:15 minutes/mile pace."
+        elif self.pace == "sub10":
+            return "Between 9:45 and 10:00 minutes/mile pace."
+        elif self.pace == "sub945":
+            return "Between 9:30 and 9:45 minutes/mile pace."
+        elif self.pace == "sub930":
+            return "Under 9:30 minutes/mile pace."
+        elif self.pace == "unknown":
+            return "Pace unknown due to GPS error."
+        else:
+            return "Pace not recorded."
+
+    def create_event(self):
+        """Package content of Run object as a Timeline-compliant XML event."""
+
+        soup = BeautifulStoneSoup("<event/>")
+
+        self.event = soup.event
+
+        self.event['start'] = self.start
+
+        self.event['end'] = self.end
+
+        self.event['title'] = "Exercise (running)"
+
+        self.event.string = "%sRan:%s %s miles.%s%sPace:%s %s" %(OI,CLI,self.miles,BREAK,OI,CLI,self.get_pace())
 
 class Carbs():
 
@@ -131,7 +284,7 @@ class Carbs():
         self.event = None
 
     def get_confidence(self):
-        """Return string translating hastag confidence into human-readable string."""
+        """Return string translating hashtag confidence into human-readable string."""
 
         if self.confidence == "nutrition_facts":
             return "Based on nutrition facts label."
@@ -509,15 +662,23 @@ def main():
 
     d.logbook()
 
-    l = Log()
+    carb_log = Log("carb")
+
+    event_log = Log("")
+
+    ex_log = Log("ex")
+
+    hypo_log = Log("hypo")
+
+    bolus_log = Log("bolus")
 
     yfd = YFD(args.yfd_name)
 
-    yfd.parse_yfd(l)
+    yfd.parse_yfd(carb_log, event_log, ex_log, hypo_log, bolus_log)
 
-    insert_num_days(l)
+    insert_num_days(carb_log)
 
-    l.endpoints()
+    carb_log.endpoints()
 
 if __name__=="__main__":
     main()
