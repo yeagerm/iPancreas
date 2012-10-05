@@ -19,7 +19,7 @@ BREAK = "&lt;br/&gt;"
 class Log():
     """A Timeline-compliant XML data structure for diabetes logbook data."""
 
-    def __init__(self, name):
+    def __init__(self, name, d):
         """Initializes a Log object."""
         
         self.file_base = "events/" + name + "_events"
@@ -28,9 +28,7 @@ class Log():
 
         self.data = self.soup.data
 
-        self.days = 0
-
-        self.dates = []
+        self.dates = d
 
     def add_event(self, event):
         """Inserts a new event in the XML logbook file."""
@@ -42,40 +40,24 @@ class Log():
 
         events = self.data.findAll('event')
 
-        xml_out = open(self.file_base+'0.xml', 'w')
+        xmls = []
 
-        last_day = self.get_date(events[0]['start'])
+        soups = []
 
-        self.dates.append(last_day)
+        for day in self.dates:
+            xmls.append(open(self.file_base+str(self.dates.index(day))+'.xml', 'w'))
+            soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
+            soups.append(soup)
 
-        soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
+        for day in self.dates:
+            i = self.dates.index(day)
+            for event in events:
+                if self.get_date(event['start']) == day:
+                    soups[i].data.insert(0, event)
 
-        day_data = soup.data
-
-        # REDO!
-        for event in events:
-            if self.get_date(event['start']) == last_day:
-                day_data.insert(0, event)
-            else:
-                print >> xml_out, soup.prettify()
-                soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
-                day_data = soup.data
-                self.days += 1
-                last_day = self.get_date(event['start'])
-                prev = self.dates[-1].date()
-                if (last_day.date() - prev) > datetime.timedelta(1):
-                    diff = (last_day.date() - prev).days
-                    while diff > 1:
-                        self.days += 1
-                        xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
-                        print >> xml_out, ""
-                        diff = diff - 1
-                else:
-                    day_data.insert(0,event)
-                xml_out = open(self.file_base+str(self.days)+'.xml', 'w')
-                self.dates.append(self.get_date(event['start']))
-
-        print >> xml_out, soup.prettify()
+        for soup in soups:
+            i = soups.index(soup)
+            print >> xmls[i], soup.prettify()
 
     def get_date(self, str):
         """Return date from Timeline-compliant XML event start attribute."""
@@ -102,7 +84,11 @@ class YFD():
         """Return time from YFD time string."""
 
         # t_str format is e.g., April 12, 2012, 4:10 p.m.
-        return datetime.datetime.strptime(t_str.replace(".",""), "%B %d, %Y, %I:%M %p")
+        if t_str.find(":") != -1:
+            return datetime.datetime.strptime(t_str.replace(".",""), "%b %d, %Y, %I:%M %p")
+        # sometimes minutes left off: e.g., Oct. 4, 2012, 9 p.m.
+        else:
+            return datetime.datetime.strptime(t_str.replace(".",""), "%b %d, %Y, %I %p")
 
     def format_time(self, t):
         """Return properly-formatted timestamp."""
@@ -119,11 +105,9 @@ class YFD():
         """Extract and write to file data from a your.FlowingData tab-delim .csv file."""
 
         for row in self.reader:
-            try:
+            if row[3] != "action_time":
                 t = self.get_timestamp(row[3])
                 new_t_str = self.format_time(t)
-            except ValueError:
-                pass
             if row[0] == 'carbs':
                 # TODO: don't hardcode this 5400 seconds (= 90 minutes) for carb overlay time
                 end = t + datetime.timedelta(0,5400)
@@ -572,6 +556,7 @@ class Dexcom():
         xml_out = open(self.file_base+'0.txt', 'w')
         last_day = self.get_date(self.readings[0])
         count = 0
+        days = [last_day]
 
         for reading in self.readings:
             if self.get_date(reading) == last_day:
@@ -581,6 +566,9 @@ class Dexcom():
                 last_day = self.get_date(reading)
                 xml_out = open(self.file_base+str(count)+'.txt','w')
                 print >> xml_out, reading['displaytime'][:-4] + "," + reading['value']
+                days.append(last_day)
+
+        return days
 
 class Ping():
 
@@ -633,14 +621,14 @@ class Ping():
                 csv_out = open(self.file_base+str(count)+'.txt', 'w'    )
                 print >> csv_out, reading
 
-def insert_num_days(log):
+def insert_num_days(n):
     """Insert the number of days of data into logbook.html where required."""
 
     soup = BS(open("logbook.html",'rU'))
 
     body = soup.body
 
-    body['onload'] = "onLoad(%d);" %(log.days+1)
+    body['onload'] = "onLoad(%d);" %(n)
 
     out = open("logbook.html", 'w')
 
@@ -660,23 +648,23 @@ def main():
 
     d = Dexcom(args.dex_name)
 
-    d.logbook()
+    days = d.logbook()
 
-    carb_log = Log("carb")
+    carb_log = Log("carb", days)
 
-    event_log = Log("")
+    event_log = Log("", days)
 
-    ex_log = Log("ex")
+    ex_log = Log("ex", days)
 
-    hypo_log = Log("hypo")
+    hypo_log = Log("hypo", days)
 
-    bolus_log = Log("bolus")
+    bolus_log = Log("bolus", days)
 
     yfd = YFD(args.yfd_name)
 
     yfd.parse_yfd(carb_log, event_log, ex_log, hypo_log, bolus_log)
 
-    insert_num_days(carb_log)
+    insert_num_days(len(days))
 
     carb_log.endpoints()
 
