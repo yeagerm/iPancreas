@@ -3,6 +3,7 @@ dex/
 events/
 ping/
 endpoints/
+raw/
 *.pyc
 *.aux
 *.log
