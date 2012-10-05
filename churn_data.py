@@ -56,8 +56,9 @@ class Log():
                     soups[i].data.insert(0, event)
 
         for soup in soups:
-            i = soups.index(soup)
-            print >> xmls[i], soup.prettify()
+            if soup.data.event:
+                i = soups.index(soup)
+                print >> xmls[i], soup.prettify()
 
     def get_date(self, str):
         """Return date from Timeline-compliant XML event start attribute."""
@@ -130,6 +131,10 @@ class YFD():
                 e = self.event(row, new_t_str)
                 e.create_event()
                 event_log.add_event(e.event)
+            elif row[0] == 'mild_hypo' or row[0] == 'severe_hypo':
+                e = self.event(row, new_t_str)
+                e.create_event()
+                hypo_log.add_event(e.event)
             elif row[0] == 'ran':
                 #TODO: don't hardcode time estimate of 12 minutes out of the house per mile
                 secs = int(float(row[1])) * 12 * 60
@@ -142,6 +147,7 @@ class YFD():
         carb_log.print_XML()
         event_log.print_XML()
         ex_log.print_XML()
+        hypo_log.print_XML()
 
 class Event():
 
@@ -176,6 +182,10 @@ class Event():
             return "Changed basal rate to %s units per 24 hours." %(self.count)
         elif self.type == "ketones":
             return "Urinalysis showed %s ketones." %(self.content)
+        elif self.type == "mild_hypo":
+            return "Mild hypoglycemia: %s mg/dL." %(self.count)
+        elif self.type == "severe_hypo":
+            return "Severe hypoglycemia: %s mg/dL." %(self.count)
 
     def get_type(self):
         """Return string translating event type into human-readable string."""
@@ -190,6 +200,8 @@ class Event():
             return "Symlin injection"
         elif self.type == "coffee":
             return "Coffee"
+        elif self.type == "mild_hypo" or self.type == "severe_hypo":
+            return "Hypoglycemia"
 
     def create_event(self):
         """Package content of generic Event object as a Timeline-compliant XML event."""

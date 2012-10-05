@@ -12,29 +12,35 @@ function onLoad(days) {
     var timeplot;
     for (i = 0; i < days; i++) {
         createPlot(document, i);
-        loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/carb_events" + i + ".xml", "events/_events" + i + ".xml", "events/ex_events" + i + ".xml");
+        loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", 
+            "events/carb_events" + i + ".xml", "events/_events" + i + ".xml", "events/ex_events" + i + ".xml",
+            "events/hypo_events" + i + ".xml");
     }
 }
 
-function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
+function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex, hypo) {
     var eventSource0 = new Timeplot.DefaultEventSource();
     var eventSource1 = new Timeplot.DefaultEventSource();
     var eventSource2 = new Timeplot.DefaultEventSource();
     var eventSource3 = new Timeplot.DefaultEventSource();
     var eventSource4 = new Timeplot.DefaultEventSource();
     var eventSource5 = new Timeplot.DefaultEventSource();
+    var eventSource6 = new Timeplot.DefaultEventSource();
 
     var pingColor = new Timeplot.Color("FFFFFF");
     pingColor.transparency(0.01);
 
     var dexFill = new Timeplot.Color("615A55");
-    dexFill.transparency(0.75);
+    dexFill.transparency(0.6);
 
     var carbColor = new Timeplot.Color("EA2C46");
-    carbColor.transparency(0.5);
+    carbColor.transparency(0.4);
+
+    var exColor = new Timeplot.Color("1E9D84");
+    exColor.transparency(0.4);
 
     var timegeometry = new Timeplot.DefaultTimeGeometry({
-        gridColor: "#000000",
+        gridColor: "#DEDEDE",
         axisLabelsPlacement: "top"
     })
 
@@ -71,6 +77,12 @@ function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
             lineColor: carbColor
         }),
         Timeplot.createPlotInfo({
+            id: "hypo",
+            timeGeometry: timegeometry,
+            eventSource: eventSource6,
+            lineColor: "#46000A"
+        }),
+        Timeplot.createPlotInfo({
             id: "events",
             timeGeometry: timegeometry,
             eventSource: eventSource4,
@@ -80,7 +92,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
             id: "ex",
             timeGeometry: timegeometry,
             eventSource: eventSource5,
-            lineColor: "#1E9D84"
+            lineColor: exColor
         }),
         Timeplot.createPlotInfo({
             id: "ping",
@@ -89,7 +101,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
             timeGeometry: timegeometry,
             lineColor: pingColor,
             dotColor: "#F67D2E",
-            //showValues: true
+            showValues: true
         })
     ];
 
@@ -100,6 +112,7 @@ function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
     timeplot.loadXML(carbs, eventSource3);
     timeplot.loadXML(events, eventSource4);
     timeplot.loadXML(ex, eventSource5);
+    timeplot.loadXML(hypo, eventSource6);
 }
 
 var resizeTimerID = null;
