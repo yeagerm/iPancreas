@@ -12,15 +12,17 @@ function onLoad(days) {
     var timeplot;
     for (i = 0; i < days; i++) {
         createPlot(document, i);
-        loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/events" + i + ".xml");
+        loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", "events/carb_events" + i + ".xml", "events/_events" + i + ".xml", "events/ex_events" + i + ".xml");
     }
 }
 
-function loadDay(timeplot, i, endpoints, dex, ping, events) {
+function loadDay(timeplot, i, endpoints, dex, ping, carbs, events, ex) {
     var eventSource0 = new Timeplot.DefaultEventSource();
     var eventSource1 = new Timeplot.DefaultEventSource();
     var eventSource2 = new Timeplot.DefaultEventSource();
     var eventSource3 = new Timeplot.DefaultEventSource();
+    var eventSource4 = new Timeplot.DefaultEventSource();
+    var eventSource5 = new Timeplot.DefaultEventSource();
 
     var pingColor = new Timeplot.Color("FFFFFF");
     pingColor.transparency(0.01);
@@ -69,12 +71,24 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
             lineColor: carbColor
         }),
         Timeplot.createPlotInfo({
+            id: "events",
+            timeGeometry: timegeometry,
+            eventSource: eventSource4,
+            lineColor: "#50D127"
+        }),
+        Timeplot.createPlotInfo({
+            id: "ex",
+            timeGeometry: timegeometry,
+            eventSource: eventSource5,
+            lineColor: "#1E9D84"
+        }),
+        Timeplot.createPlotInfo({
             id: "ping",
             dataSource: new Timeplot.ColumnSource(eventSource2,1),
             valueGeometry: valuegeometry,
             timeGeometry: timegeometry,
             lineColor: pingColor,
-            dotColor: "#33C7B8",
+            dotColor: "#F67D2E",
             //showValues: true
         })
     ];
@@ -83,7 +97,9 @@ function loadDay(timeplot, i, endpoints, dex, ping, events) {
     timeplot.loadText(endpoints, ",", eventSource0);
     timeplot.loadText(dex, ",", eventSource1);
     timeplot.loadText(ping, ",", eventSource2);
-    timeplot.loadXML(events, eventSource3);
+    timeplot.loadXML(carbs, eventSource3);
+    timeplot.loadXML(events, eventSource4);
+    timeplot.loadXML(ex, eventSource5);
 }
 
 var resizeTimerID = null;
