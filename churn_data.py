@@ -97,10 +97,10 @@ class YFD():
         # new_t_str format should be e.g., 2012-01-01 00:00:00
         return t.strftime("%Y-%m-%d %H:%M:%S")
 
-    def event(self, row, t):
+    def event(self, row, t, n, log):
         """Return an Event object."""
 
-        return Event(row[0], row[1], row[2], t, row[4])
+        return Event(row[0], row[1], row[2], t, row[4], n, log)
 
     def parse_yfd(self, carb_log, event_log, ex_log, hypo_log, bolus_log):
         """Extract and write to file data from a your.FlowingData tab-delim .csv file."""
@@ -128,19 +128,18 @@ class YFD():
                 c.create_event()
                 carb_log.add_event(c.event)
             elif row[0] == 'ate' or row[0] == 'gnite' or row[0] == 'gmorn' or row[0] == 'symlin' or row[0] == 'coffee':
-                e = self.event(row, new_t_str)
+                e = self.event(row, new_t_str, 0, event_log)
                 e.create_event()
-                event_log.add_event(e.event)
             elif row[0] == 'mild_hypo' or row[0] == 'severe_hypo':
-                e = self.event(row, new_t_str)
+                e = self.event(row, new_t_str, 15, hypo_log)
                 e.create_event()
-                hypo_log.add_event(e.event)
+            elif row[0] == 'meal_bolus' or row[0] == 'correction_bolus':
+                e = self.event(row, new_t_str, 240, bolus_log)
+                e.create_event()
+            elif row[0] == 'done_run':
+                run_end = new_t_str
             elif row[0] == 'ran':
-                #TODO: don't hardcode time estimate of 12 minutes out of the house per mile
-                secs = int(float(row[1])) * 12 * 60
-                end = t + datetime.timedelta(0,secs)
-                end_str = self.format_time(end)
-                r = Run(row[1], row[2], new_t_str, end_str)
+                r = Run(row[1], row[2], new_t_str, run_end)
                 r.create_event()
                 ex_log.add_event(r.event)
 
@@ -148,10 +147,11 @@ class YFD():
         event_log.print_XML()
         ex_log.print_XML()
         hypo_log.print_XML()
+        bolus_log.print_XML()
 
 class Event():
 
-    def __init__(self, cat, count , desc, t, tag):
+    def __init__(self, cat, count , desc, t, tag, duration, log):
 
         self.type = cat
 
@@ -161,9 +161,13 @@ class Event():
 
         self.time = t
 
+        self.duration = duration
+
         self.hashtag = tag
 
         self.event = None
+
+        self.log = log
 
     def get_event_string(self):
         """Return string describing event in plain English."""
@@ -186,6 +190,10 @@ class Event():
             return "Mild hypoglycemia: %s mg/dL." %(self.count)
         elif self.type == "severe_hypo":
             return "Severe hypoglycemia: %s mg/dL." %(self.count)
+        elif self.type == "meal_bolus":
+            return "Meal bolus: %s units of insulin." %(self.count)
+        elif self.type == "correction_bolus":
+            return "Correction bolus: %s units of insulin. Tag(s): %s." %(self.count, self.hashtag)
 
     def get_type(self):
         """Return string translating event type into human-readable string."""
@@ -202,6 +210,8 @@ class Event():
             return "Coffee"
         elif self.type == "mild_hypo" or self.type == "severe_hypo":
             return "Hypoglycemia"
+        elif self.type == "meal_bolus" or self.type == "correction_bolus":
+            return "Bolus"
 
     def create_event(self):
         """Package content of generic Event object as a Timeline-compliant XML event."""
@@ -210,11 +220,35 @@ class Event():
 
         self.event = soup.event
 
+        if self.duration != 0:
+            self.event['end'] = self.get_end()
+
         self.event['start'] = self.time
 
         self.event['title'] = self.get_type()
 
         self.event.string = self.get_event_string()
+
+        self.log_event()
+
+    def log_event(self):
+        self.log.add_event(self.event)
+
+    def get_end(self):
+        """Return properly-formatted timestamp of end of event, given its duration and start time."""
+
+        t = datetime.datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S")
+        stop_t = t + datetime.timedelta(0,0,0,0,self.duration)
+        if stop_t.day != t.day:
+            time = datetime.datetime(stop_t.year,stop_t.month,stop_t.day,0,0,0)
+            delta = stop_t - time
+            delta_min = delta.seconds/60
+            t_str = time.strftime("%Y-%m-%d %H:%M:%S")
+            e = Event(self.type, self.count, self.content, t_str, self.hashtag, delta_min, self.log)
+            e.create_event()
+            e.log_event()
+            stop_t = datetime.datetime(t.year,t.month,t.day,23,59,59)
+        return stop_t.strftime("%Y-%m-%d %H:%M:%S")
 
 class Run():
 
