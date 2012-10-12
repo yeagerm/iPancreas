@@ -1,8 +1,4 @@
 .DS_Store
-dex/
-events/
-ping/
-endpoints/
 raw/
 *.pyc
 *.aux
