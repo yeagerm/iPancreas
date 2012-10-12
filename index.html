@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>iPancreas by jebeck</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>iPancreas</h1>
+          <h2>Tools for being a better pancreas.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/jebeck/iPancreas/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/jebeck/iPancreas/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/jebeck/iPancreas" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h2>The Problem</h2>
+
+<p>Those of us with some type of diabetes (whether type 1, type 2, or
+monogenic) take on the task of either partially or fully simulating the
+functioning of a biologically normal person's pancreas. In short, we
+become our own pancreases. The tools we have to do this today--analog
+insulins, home blood glucose monitors, insulin pumps, and continuous
+blood glucose monitors--are much, much better than the tools that were
+available to persons with diabetes (PWDs) even a generation ago.</p>
+
+<p>But unfortunately, the tools at our disposal for managing the data that
+is associated with these devices and technologies are very poor indeed.
+Some are not available to everyone (the software for the Dexcom
+continuous glucose monitor only runs on the Windows operating system);
+some are fiendishly difficult to operate (uploading data from an
+Animas/OneTouch Ping insulin pump into the Animas ezManager software via
+the late-1990s-technology of an <em>infrared</em> syncing cable is a trial in
+infinite patience; this is not to mention that despite supposed
+compatibility, I have not <em>ever</em> succeeded in getting the Animas
+ezManager software to sync with the pump successfully on my iMac running
+OS X 10.7 Lion); many keep the data they produce locked away in
+proprietary formats or only offer exporting of data in formats
+inconvenient or downright useless (e.g., XML) for the average user.</p>
+
+<p>In recent years since the introduction of the iPhone and the rising to
+dominance of the smart phone paradigm in the cell phone marketplace, a
+whole host of "logbook" applications have been developed ostensibly to
+make the management of diabetes-related data easier. However, nearly
+all--if not all (I speak from the position of having casually but not
+thoroughly surveyed the landscape)--of these applications continue to
+require a PWD to manually enter the data s/he wants to track. Given the
+fact that except on the most very basic of blood glucose meters, every
+test performed on a blood glucose meter is stored in memory, this
+strikes me as a completely unnecessary replication of effort. The act of
+performing a blood glucose test is itself an act of record-making; to
+require that the PWD take the extra step of entering the result of this
+test into a data-tracking application is <em>silly</em> and <em>wasteful</em>. The
+same goes for insulin doses, at least where insulin pumps are involved.</p>
+
+<h2>My Solution</h2>
+
+<p>All of this is an introduction to the tools I'm developing in this
+repository. The tools here all rely on the export formats that <em>are</em>
+available from various diabetes devices. (At the moment, of course, this
+is limited to the devices I personally use.) My goal is to create
+software tools that will be truly cross-platform, freely available (and
+open source), and easy to use. The goal of these tools is to integrate
+data regarding all aspects of life that affect diabetes (including
+meals, carbohydrate counts, exercise, sleep, etc., as well as blood
+glucose readings and insulin doses) and present that data in engaging,
+informative, and in appropriate cases interactive visualizations.</p>
+
+<p>If you would like to be involved in testing these software tools, you
+may contact me via e-mail. Be aware that in their present state, the
+tools I've developed are <strong>not yet user-friendly</strong>: you need to be
+familiar with the command line in order to use these tools.</p>
+
+<p>The latest version of (some of) the output from these tools is visible
+<a href="examples/logbook.html">here</a>. What's shown is the following:</p>
+
+<ul>
+<li>
+<p>six days of data from my Dexcom continuous glucose monitor</p>
+
+<ul>
+<li>  This is the gray line with shading underneath.</li>
+<li>  Moving your mouse over the graph shows you the readings at each
+point.</li>
+</ul>
+</li>
+<li>
+<p>blood glucose measurements from my blood glucose meter</p>
+
+<ul>
+<li>  These are the green dots.</li>
+</ul>
+</li>
+<li>
+<p>records of my carbohydrate intake</p>
+
+<ul>
+<li>  These are the red overlays.</li>
+<li>  You can click on these to see the carbohydrate count in grams
+along with a description of what I ate and my assessment of the
+confidence I have in the carbohydrate count.</li>
+</ul>
+</li>
+</ul><p>The logic behind the width of the red overlays is that it takes about
+90-120 minutes (90 minutes precisely is what's shown in the graph) for
+blood glucose to peak after ingesting carbohydrates.</p>
+
+<p>Copyright 2012 Jana E. Beck</p>
+
+<p>Contact: <a href="mailto:jana.eliz.beck@gmail.com">Jana E. Beck</a></p>
+
+<h3>License</h3>
+
+<p>The software tools in this repository are free software: you can
+redistribute them and/or modify them under the terms of the GNU General
+Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.</p>
+
+<p>These programs are distributed in the hope that they will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.</p>
+
+<h3>About</h3>
+
+<p>The software tools in this repository are provided as aids for
+extracting data from files exported from the software that comes with
+certain diabetes-related medical devices (namely, continuous glucose
+monitors and insulin pumps) and visualizing that data. None of the tools
+in this repository is intended to substitute for professional medical
+advice regarding your diabetes care. Consult with your health care
+provider before making any treatment decisions or changes.</p>
+        </section>
+
+        <footer>
+          iPancreas is maintained by <a href="https://github.com/jebeck">jebeck</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-26285341-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
+    </div>
+  </body>
+</html>
