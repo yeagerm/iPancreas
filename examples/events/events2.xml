@@ -1,0 +1,14 @@
+<data date-time-format="iso8601">
+ <event start="2012-04-10 22:54:00" end="2012-04-10 23:59:00" title="Carbs: 21">
+  &lt;i&gt;Ate:&lt;/i&gt; apple with peanut butter.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+ <event start="2012-04-10 13:20:00" end="2012-04-10 14:50:00" title="Carbs: 30">
+  &lt;i&gt;Ate:&lt;/i&gt; Volkornbrot with butter.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event start="2012-04-10 10:36:00" end="2012-04-10 12:06:00" title="Carbs: 5">
+  &lt;i&gt;Ate:&lt;/i&gt; Greek yogurt.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event start="2012-04-10 00:00:00" end="2012-04-10 01:17:00" title="Carbs: 11">
+  &lt;i&gt;Ate:&lt;/i&gt; organic foursome.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+</data>
