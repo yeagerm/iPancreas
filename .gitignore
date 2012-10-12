@@ -1,0 +1,15 @@
+.DS_Store
+dex/
+events/
+ping/
+endpoints/
+raw/
+*.pyc
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.picasa*
