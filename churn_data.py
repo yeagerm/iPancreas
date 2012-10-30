@@ -84,8 +84,15 @@ class YFD():
     def get_timestamp(self, t_str):
         """Return time from YFD time string."""
 
+        # TODO: figure out other exceptions to standard Python abbreviations in YFD timestamps
+        t_str = t_str.replace("Sept", "Sep")
+        
         # t_str format is e.g., April 12, 2012, 4:10 p.m.
         if t_str.find(":") != -1:
+            return datetime.datetime.strptime(t_str.replace(".",""), "%b %d, %Y, %I:%M %p")
+        # t_str format contains "noon": Oct 16, 2012, noon
+        elif t_str.find("noon") != -1:
+            t_str = t_str.replace("noon", "12:00 p.m.")
             return datetime.datetime.strptime(t_str.replace(".",""), "%b %d, %Y, %I:%M %p")
         # sometimes minutes left off: e.g., Oct. 4, 2012, 9 p.m.
         else:
