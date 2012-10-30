@@ -1,5 +1,5 @@
-from BeautifulSoup import BeautifulStoneSoup, Tag, NavigableString
-from BeautifulSoup import BeautifulSoup as BS
+from bs4 import BeautifulSoup, Tag, NavigableString
+from bs4 import BeautifulSoup as BS
 import argparse
 import datetime
 import sys
@@ -24,7 +24,7 @@ class Log():
         
         self.file_base = "events/" + name + "_events"
 
-        self.soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
+        self.soup = BeautifulSoup("<data date-time-format='iso8601'></data>", "xml")
 
         self.data = self.soup.data
 
@@ -46,7 +46,7 @@ class Log():
 
         for day in self.dates:
             xmls.append(open(self.file_base+str(self.dates.index(day))+'.xml', 'w'))
-            soup = BeautifulStoneSoup("<data date-time-format='iso8601'></data>")
+            soup = BeautifulSoup("<data date-time-format='iso8601'></data>", "xml")
             soups.append(soup)
 
         for day in self.dates:
@@ -216,7 +216,7 @@ class Event():
     def create_event(self):
         """Package content of generic Event object as a Timeline-compliant XML event."""
 
-        soup = BeautifulStoneSoup("<event/>")
+        soup = BeautifulSoup("<event/>", "xml")
 
         self.event = soup.event
 
@@ -285,7 +285,7 @@ class Run():
     def create_event(self):
         """Package content of Run object as a Timeline-compliant XML event."""
 
-        soup = BeautifulStoneSoup("<event/>")
+        soup = BeautifulSoup("<event/>", "xml")
 
         self.event = soup.event
 
@@ -328,7 +328,7 @@ class Carbs():
     def create_event(self):
         """Package content of Carbs object as a Timeline-compliant XML event."""
 
-        soup = BeautifulStoneSoup("<event/>")
+        soup = BeautifulSoup("<event/>", "xml")
 
         self.event = soup.event
 
@@ -363,25 +363,25 @@ class Dexcom():
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
 
-        return datetime.datetime.strptime(reading['displaytime'][:10], "%Y-%m-%d")
+        return datetime.datetime.strptime(reading['DisplayTime'][:10], "%Y-%m-%d")
 
     def get_time(self, reading):
         """Return the hour of the day as a 24-hr clock integer from a Dexcom XML object representing a single BG reading."""
 
-        t = datetime.datetime.strptime(reading['displaytime'][:-4], "%Y-%m-%d %H:%M:%S")
+        t = datetime.datetime.strptime(reading['DisplayTime'][:-4], "%Y-%m-%d %H:%M:%S")
 
         return t.hour
 
     def get_date_str(self, reading):
         """Return a string of the date from a Dexcom XML object representing a single BG reading."""
 
-        return reading['displaytime'][:10]
+        return reading['DisplayTime'][:10]
 
     def get_readings(self):
         """Return array of XML objects each representing a blood glucose reading."""
 
-        xsoup = BeautifulStoneSoup(self.xml_file, selfClosingTags=['Meter','Sensor'])
-        return xsoup.findAll('sensor')
+        xsoup = BeautifulSoup(self.xml_file, "xml")
+        return xsoup.findAll('Sensor')
 
     def stats(self):
         """Write to a single .csv file various per-day statistics from Dexcom data."""
@@ -394,26 +394,26 @@ class Dexcom():
 
         for reading in self.readings:
             if self.get_date(reading) == last_day:
-                days[count][0].append(int(reading['value']))
-                if int(reading['value']) <= 65:
-                    days[count][1].append(int(reading['value']))
-                elif int(reading['value']) > 65 and int(reading['value']) <= 140:
-                    days[count][2].append(int(reading['value']))
-                elif int(reading['value']) > 140:
-                    days[count][3].append(int(reading['value']))
+                days[count][0].append(int(reading['Value']))
+                if int(reading['Value']) <= 65:
+                    days[count][1].append(int(reading['Value']))
+                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
+                    days[count][2].append(int(reading['Value']))
+                elif int(reading['Value']) > 140:
+                    days[count][3].append(int(reading['Value']))
                 else:
-                    print "I can't classify this BG reading: %s!" %reading['value']
+                    print "I can't classify this BG reading: %s!" %reading['Value']
             else:
                 count += 1
-                days[count] = ([int(reading['value'])],[],[],[],self.get_date_str(reading))
-                if int(reading['value']) <= 65:
-                    days[count][1].append(int(reading['value']))
-                elif int(reading['value']) > 65 and int(reading['value']) <= 140:
-                    days[count][2].append(int(reading['value']))
-                elif int(reading['value']) > 140:
-                    days[count][3].append(int(reading['value']))
+                days[count] = ([int(reading['Value'])],[],[],[],self.get_date_str(reading))
+                if int(reading['Value']) <= 65:
+                    days[count][1].append(int(reading['Value']))
+                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
+                    days[count][2].append(int(reading['Value']))
+                elif int(reading['Value']) > 140:
+                    days[count][3].append(int(reading['Value']))
                 else:
-                    print "I can't classify this BG reading: %s!" %reading['value']
+                    print "I can't classify this BG reading: %s!" %reading['Value']
                 last_day = self.get_date(reading)
 
         header = ['date', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
@@ -437,8 +437,8 @@ class Dexcom():
 
         for reading in self.readings:
             weekday = self.get_date(reading).weekday()
-            bg = int(reading['value'])
-            time = reading['displaytime']
+            bg = int(reading['Value'])
+            time = reading['DisplayTime']
             self.day_writer.writerow([time,bg,weekday])
 
     def day_heatmap(self):
@@ -459,7 +459,7 @@ class Dexcom():
 
         for reading in self.readings:
             weekday = self.get_date(reading).weekday()
-            bg = int(reading['value'])
+            bg = int(reading['Value'])
             for bin in bins:
                 if bg < bin and bg > last_bin:
                     bg = bin
@@ -500,7 +500,7 @@ class Dexcom():
 
         for reading in self.readings:
             hour = self.get_time(reading)
-            bg = int(reading['value'])
+            bg = int(reading['Value'])
             for bin in bins:
                 if bg < bin and bg > last_bin:
                     bg = bin
@@ -538,7 +538,7 @@ class Dexcom():
 
         for reading in self.readings:
             hour = self.get_time(reading)
-            bg = int(reading['value'])
+            bg = int(reading['Value'])
             for bin in bins:
                 if bg < bin and bg > last_bin:
                     bg = bin
@@ -606,12 +606,12 @@ class Dexcom():
 
         for reading in self.readings:
             if self.get_date(reading) == last_day:
-                print >> xml_out, reading['displaytime'][:-4] + "," + reading['value']
+                print >> xml_out, reading['DisplayTime'][:-4] + "," + reading['Value']
             else:
                 count += 1
                 last_day = self.get_date(reading)
                 xml_out = open(self.file_base+str(count)+'.txt','w')
-                print >> xml_out, reading['displaytime'][:-4] + "," + reading['value']
+                print >> xml_out, reading['DisplayTime'][:-4] + "," + reading['Value']
                 days.append(last_day)
 
         return days
