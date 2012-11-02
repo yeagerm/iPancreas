@@ -1,0 +1,11 @@
+.DS_Store
+raw/
+*.pyc
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.picasa*
