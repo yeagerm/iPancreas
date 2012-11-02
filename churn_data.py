@@ -708,8 +708,6 @@ def main():
     else:
         days = d.logbook()
 
-    print days
-
     carb_log = Log("carb", days)
 
     event_log = Log("", days)
