@@ -10,8 +10,8 @@
    SimileAjax.History.enabled = false;
   </script>
   <script>
-   <!-- This little section of script gets Timeplot and Timeline times to match up and prints Timeline times in local timezone -->
-<!-- instead of GMT. -->
+   &lt;!-- This little section of script gets Timeplot and Timeline times to match up and prints Timeline times in local timezone --&gt;
+&lt;!-- instead of GMT. --&gt;
 Timeline.GregorianDateLabeller.prototype.labelPrecise = function(date) {
     return date.toLocaleString();
 };
@@ -22,4 +22,3 @@ Timeline.GregorianDateLabeller.prototype.labelPrecise = function(date) {
  <body onload="onLoad(5);" onresize="onResize();">
  </body>
 </html>
-
