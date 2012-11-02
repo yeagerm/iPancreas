@@ -18,7 +18,7 @@ function onLoad(days) {
         document.body.appendChild(newDiv);
         createPlot(document, i, "dex");
         loadDay(timeplot, i, "endpoints/endpoints" + i + ".txt", "dex/dex" + i + ".txt", "ping/ping" + i + ".txt", 
-            "events/_events" + i + ".xml", "events/hypo_events" + i + ".xml");
+            "events/events" + i + ".xml", "events/hypo_events" + i + ".xml");
         createPlot(document, i, "bolus");
         loadEvents(eventplot, i, "endpoints/endpoints" + i + ".txt", "events/bolus_events" + i + ".xml", 
             "events/carb_events" + i + ".xml", "events/ex_events" + i + ".xml");
