@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event end="2012-10-04 23:59:00" start="2012-10-04 23:09:00" title="Carbs: 8">
+  &lt;i&gt;Ate:&lt;/i&gt; Marcona almonds.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+ <event end="2012-10-04 18:43:00" start="2012-10-04 17:13:00" title="Carbs: 7">
+  &lt;i&gt;Ate:&lt;/i&gt; peanut butter.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event end="2012-10-04 18:31:00" start="2012-10-04 17:01:00" title="Carbs: 5">
+  &lt;i&gt;Ate:&lt;/i&gt; gorgonzola and walnut salad.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event end="2012-10-04 14:22:00" start="2012-10-04 12:52:00" title="Carbs: 5">
+  &lt;i&gt;Ate:&lt;/i&gt; Greek yogurt.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event end="2012-10-04 06:03:00" start="2012-10-04 04:33:00" title="Carbs: 12">
+  &lt;i&gt;Ate:&lt;/i&gt; dark chocolate.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+</data>

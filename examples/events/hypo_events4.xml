@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event end="2012-10-05 20:07:00" start="2012-10-05 19:52:00" title="Hypoglycemia">
+  Severe hypoglycemia: 47.00 mg/dL.
+ </event>
+ <event end="2012-10-05 19:50:00" start="2012-10-05 19:35:00" title="Hypoglycemia">
+  Severe hypoglycemia: 33.00 mg/dL.
+ </event>
+ <event end="2012-10-05 15:33:00" start="2012-10-05 15:18:00" title="Hypoglycemia">
+  Severe hypoglycemia: 47.00 mg/dL.
+ </event>
+ <event end="2012-10-05 08:54:00" start="2012-10-05 08:39:00" title="Hypoglycemia">
+  Severe hypoglycemia: 50.00 mg/dL.
+ </event>
+</data>

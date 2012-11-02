@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event end="2012-10-03 18:45:00" start="2012-10-03 14:45:00" title="Bolus">
+  Correction bolus: 0.50 units of insulin. Tag(s): my_bad coffee.
+ </event>
+ <event end="2012-10-03 06:31:00" start="2012-10-03 02:31:00" title="Bolus">
+  Correction bolus: 0.45 units of insulin. Tag(s): WTF.
+ </event>
+ <event end="2012-10-03 01:33:00" start="2012-10-03 00:00:00" title="Bolus">
+  Meal bolus: 0.45 units of insulin.
+ </event>
+ <event end="2012-10-03 00:27:00" start="2012-10-03 00:00:00" title="Bolus">
+  Correction bolus: 0.25 units of insulin. Tag(s): my_bad.
+ </event>
+</data>
