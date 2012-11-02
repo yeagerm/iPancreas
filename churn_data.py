@@ -692,6 +692,7 @@ def main():
     parser.add_argument('-d', '--dexcom', action = 'store', dest = "dex_name", help='name of Dexcom xml file')
     parser.add_argument('-p', '--ping', action = 'store', dest = "ping_name", help='name of OneTouch Ping csv file')
     parser.add_argument('-y', '--yfd', action = 'store', dest = "yfd_name", help='name of your.FlowingData csv file')
+    parser.add_argument('-n', '--days', action = 'store', type=int, dest = "days", default=0, help='number of days of data you would like processed, starting from the beginning of the file')
 
     args = parser.parse_args()
 
@@ -701,7 +702,13 @@ def main():
 
     d = Dexcom(args.dex_name)
 
-    days = d.logbook()
+    if args.days != 0:
+        tmp = d.logbook()
+        days = tmp[:args.days]
+    else:
+        days = d.logbook()
+
+    print days
 
     carb_log = Log("carb", days)
 
