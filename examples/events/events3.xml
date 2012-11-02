@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event start="2012-10-04 23:09:00" title="Low-carb meal/snack">
+  &lt;i&gt;Ate:&lt;/i&gt; cheese.
+ </event>
+ <event start="2012-10-04 12:58:00" title="Coffee">
+  &lt;i&gt;Drank:&lt;/i&gt; 1.50 cup(s) of coffee.
+ </event>
+</data>

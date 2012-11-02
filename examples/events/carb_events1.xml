@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event end="2012-10-02 23:03:00" start="2012-10-02 21:33:00" title="Carbs: 5">
+  &lt;i&gt;Ate:&lt;/i&gt; green beans.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+ <event end="2012-10-02 20:25:00" start="2012-10-02 18:55:00" title="Carbs: 8">
+  &lt;i&gt;Ate:&lt;/i&gt; Clif Shot Blok.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+ <event end="2012-10-02 19:19:00" start="2012-10-02 17:49:00" title="Carbs: 20">
+  &lt;i&gt;Ate:&lt;/i&gt; crackers with almond butter.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Based on nutrition facts label.
+ </event>
+ <event end="2012-10-02 15:05:00" start="2012-10-02 13:35:00" title="Carbs: 5">
+  &lt;i&gt;Ate:&lt;/i&gt; gorgonzola and walnut salad.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+ <event end="2012-10-02 10:59:00" start="2012-10-02 09:29:00" title="Carbs: 69">
+  &lt;i&gt;Ate:&lt;/i&gt; whole wheat bread with butter.&lt;br/&gt;&lt;i&gt;Confidence level of carb count:&lt;/i&gt; Guesstimated from rules-of-thumb, prior experience, or nutrition facts without precise portion measurement.
+ </event>
+</data>

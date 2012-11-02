@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data date-time-format="iso8601">
+ <event end="2012-10-04 23:59:59" start="2012-10-04 23:04:00" title="Bolus">
+  Meal bolus: 0.70 units of insulin.
+ </event>
+ <event end="2012-10-04 23:59:59" start="2012-10-04 22:09:00" title="Bolus">
+  Correction bolus: 0.45 units of insulin. Tag(s): WTF.
+ </event>
+ <event end="2012-10-04 16:52:00" start="2012-10-04 12:52:00" title="Bolus">
+  Meal bolus: 0.45 units of insulin.
+ </event>
+ <event end="2012-10-04 16:52:00" start="2012-10-04 12:52:00" title="Bolus">
+  Correction bolus: 0.15 units of insulin. Tag(s): WTF.
+ </event>
+ <event end="2012-10-04 08:32:00" start="2012-10-04 04:32:00" title="Bolus">
+  Meal bolus: 1.10 units of insulin.
+ </event>
+</data>
