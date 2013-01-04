@@ -8,3 +8,5 @@ rm -f dex/dex*
 rm -f ping/ping*
 rm -f events/*events*
 rm -f endpoints/endpoints*
+rm -f raw/dexcom_*
+rm -f raw/g4_*
