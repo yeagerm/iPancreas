@@ -4,8 +4,6 @@ from rpy2.robjects.vectors import DataFrame
 from rpy2.robjects.packages import importr
 import rpy2.robjects as robjects
 
-#import rpy2.robjects.lib.ggplot2 as ggplot2
-
 r = robjects.r
 r_base = importr('base')
 grdevices = importr('grDevices')
@@ -32,7 +30,7 @@ class DexcomCharts():
     def boxplot(self):
         """Create a boxplot of all Dexcom blood glucose readings."""
 
-        grdevices.png(file="raw/boxplot.png", width=512, height=512)
+        grdevices.pdf(file="img/boxplot.pdf")
         r.boxplot(self.dexcom_data.rx2('blood_glucose'))
         grdevices.dev_off()
 
