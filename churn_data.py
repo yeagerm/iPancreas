@@ -401,7 +401,6 @@ class Dexcom():
 
     def stats(self):
         """Write to a single .csv file various per-day statistics from Dexcom data."""
-        """TBD."""
 
         last_day = self.get_date(self.readings[0])
         count = 0
@@ -447,7 +446,6 @@ class Dexcom():
 
     def day_csv(self):
         """Export .csv that can be made into day boxplots directly in R."""
-        """TBD."""
 
         header = ["timestamp","reading","weekday"]
 
@@ -461,7 +459,6 @@ class Dexcom():
 
     def day_heatmap(self):
         """Export .csv that can be made into a day-of-the-week heatmap directly in R."""
-        """TBD."""
 
         header = ["","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
@@ -503,7 +500,6 @@ class Dexcom():
 
     def time_heatmap(self):
         """Export .csv that can be made into a time-of-day heatmap directly in R."""
-        """TBD."""
 
         header = ["","midnight", "1 a.m.", "2 a.m.", "3 a.m.", "4 a.m.", "5 a.m.", "6 a.m.", "7 a.m.", "8 a.m.", "9 a.m.", "10 a.m.", "11 a.m.","noon", "1 p.m.", "2 p.m.", "3 p.m.", "4 p.m.", "5 p.m.", "6 p.m.", "7 p.m.", "8 p.m.", "9 p.m.", "10 p.m.", "11 p.m."]
 
@@ -545,7 +541,6 @@ class Dexcom():
 
     def bubble_chart(self):
         """Export .csv that can be uploaded to Google Docs to make a bubble chart."""
-        """TBD."""
 
         header = ['id', 'time_of_day', 'blood_glucose', 'group', 'freq']
 
@@ -598,7 +593,6 @@ class Dexcom():
 
     def get_class(self, bg):
         """Return class descriptor of BG bin."""
-        """TBD."""
 
         low = ['low',40,60]
 
