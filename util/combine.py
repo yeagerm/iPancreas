@@ -18,7 +18,12 @@ def main():
 			pair = row[3].split('.')
 			time = datetime.datetime.strptime(pair[0], "%Y-%m-%d %H:%M:%S")
 			row_to_write.append(time.strftime("%Y-%m-%d %H:%M:%S"))
-			row_to_write.append(row[4])
+			if row[4] != "Low" and row[4] != "High":
+				row_to_write.append(row[4])
+			elif row[4] == "Low":
+				row_to_write.append(39)
+			elif row[4] == "High":
+				row_to_write.append(400)
 			output.writerow(row_to_write)
 
 	with open('../raw/receiver2.csv', 'rb') as f:
@@ -30,7 +35,12 @@ def main():
 			pair = row[3].split('.')
 			time = datetime.datetime.strptime(pair[0], "%Y-%m-%d %H:%M:%S")
 			row_to_write.append(time.strftime("%Y-%m-%d %H:%M:%S"))
-			row_to_write.append(row[4])
+			if row[4] != "Low" and row[4] != "High":
+				row_to_write.append(row[4])
+			elif row[4] == "Low":
+				row_to_write.append(39)
+			elif row[4] == "High":
+				row_to_write.append(400)
 			output.writerow(row_to_write)
 
 	with open('../raw/receiver3.csv', 'rb') as f:
@@ -42,7 +52,12 @@ def main():
 			pair = row[3].split('.')
 			time = datetime.datetime.strptime(pair[0], "%Y-%m-%d %H:%M:%S")
 			row_to_write.append(time.strftime("%Y-%m-%d %H:%M:%S"))
-			row_to_write.append(row[4])
+			if row[4] != "Low" and row[4] != "High":
+				row_to_write.append(row[4])
+			elif row[4] == "Low":
+				row_to_write.append(39)
+			elif row[4] == "High":
+				row_to_write.append(400)
 			output.writerow(row_to_write)
 		
 if __name__ == "__main__":
