@@ -3,7 +3,7 @@ import datetime
 
 def main():
 
-	output = csv.writer(open('all_dexcom.csv', 'w'))
+	output = csv.writer(open('../raw/all_dexcom.csv', 'w'))
 
 	header = ['timestamp', 'blood_glucose']
 
