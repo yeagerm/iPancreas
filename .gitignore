@@ -4,6 +4,7 @@ events/
 ping/
 endpoints/
 raw/
+img/
 *.pyc
 *.aux
 *.log
