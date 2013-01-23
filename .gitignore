@@ -10,6 +10,7 @@ img/
 *.log
 *.nav
 *.out
+*.rel
 *.snm
 *.synctex.gz
 *.toc
