@@ -362,16 +362,18 @@ class Dexcom():
             self.readings = platinum.readings
             self.ext = '.csv'
 
-        #TODO: remove [4:], which is a temp hack to get rid of the 'raw/' at the beginning of the filename string
-        self.stats_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_stats.csv'), 'w'))
+        #TODO: make a 'to-R' directory if it doesn't exist (won't work otherwise)
+        new_filename = filename.split('/')[1]
 
-        self.day_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext,'_day.csv'), 'w'))
+        self.stats_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_stats.csv'), 'w'))
 
-        self.bubble_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_bubble.csv'), 'w'))
+        self.day_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext,'_day.csv'), 'w'))
 
-        self.day_heat_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext,'_day_heatmap.csv'), 'w'))
+        self.bubble_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_bubble.csv'), 'w'))
 
-        self.time_heat_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_time_heatmap.csv'), 'w'))
+        self.day_heat_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext,'_day_heatmap.csv'), 'w'))
+
+        self.time_heat_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_time_heatmap.csv'), 'w'))
 
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
@@ -410,25 +412,26 @@ class Dexcom():
         days[count] = ([],[],[],[],self.get_date_str(self.readings[0]))
 
         for reading in self.readings:
+            value = int(reading['Value'])
             if self.get_date(reading) == last_day:
-                days[count][0].append(int(reading['Value']))
-                if int(reading['Value']) <= 65:
-                    days[count][1].append(int(reading['Value']))
-                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
-                    days[count][2].append(int(reading['Value']))
-                elif int(reading['Value']) > 140:
-                    days[count][3].append(int(reading['Value']))
+                days[count][0].append(value)
+                if value <= 65:
+                    days[count][1].append(value)
+                elif value > 65 and value <= 140:
+                    days[count][2].append(value)
+                elif value > 140:
+                    days[count][3].append(value)
                 else:
                     print "I can't classify this BG reading: %s!" %reading['Value']
             else:
                 count += 1
-                days[count] = ([int(reading['Value'])],[],[],[],self.get_date_str(reading))
-                if int(reading['Value']) <= 65:
-                    days[count][1].append(int(reading['Value']))
-                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
-                    days[count][2].append(int(reading['Value']))
-                elif int(reading['Value']) > 140:
-                    days[count][3].append(int(reading['Value']))
+                days[count] = ([value],[],[],[],self.get_date_str(reading))
+                if value <= 65:
+                    days[count][1].append(value)
+                elif value > 65 and value <= 140:
+                    days[count][2].append(value)
+                elif value > 140:
+                    days[count][3].append(value)
                 else:
                     print "I can't classify this BG reading: %s!" %reading['Value']
                 last_day = self.get_date(reading)
