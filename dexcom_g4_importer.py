@@ -21,6 +21,10 @@ class G4Reader():
 			reading = soup.Sensor
 			reading['DisplayTime'] = row[3]
 			reading['Value'] = row[4]
+			if reading['Value'] == "Low":
+				reading['Value'] = 39
+			elif reading['Value'] == "High":
+				reading['Value'] = 401
 			readings.append(reading)
 
 		return readings
