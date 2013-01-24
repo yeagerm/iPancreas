@@ -362,15 +362,16 @@ class Dexcom():
             self.readings = platinum.readings
             self.ext = '.csv'
 
-        self.stats_writer = csv.writer(open(filename.replace(self.ext, '_stats.csv'), 'w'))
+        #TODO: remove [4:], which is a temp hack to get rid of the 'raw/' at the beginning of the filename string
+        self.stats_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_stats.csv'), 'w'))
 
-        self.day_writer = csv.writer(open(filename.replace(self.ext,'_day.csv'), 'w'))
+        self.day_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext,'_day.csv'), 'w'))
 
-        self.bubble_writer = csv.writer(open(filename.replace(self.ext, '_bubble.csv'), 'w'))
+        self.bubble_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_bubble.csv'), 'w'))
 
-        self.day_heat_writer = csv.writer(open(filename.replace(self.ext,'_day_heatmap.csv'), 'w'))
+        self.day_heat_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext,'_day_heatmap.csv'), 'w'))
 
-        self.time_heat_writer = csv.writer(open(filename.replace(self.ext, '_time_heatmap.csv'), 'w'))
+        self.time_heat_writer = csv.writer(open('to-R/' + filename[4:].replace(self.ext, '_time_heatmap.csv'), 'w'))
 
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
@@ -432,7 +433,7 @@ class Dexcom():
                     print "I can't classify this BG reading: %s!" %reading['Value']
                 last_day = self.get_date(reading)
 
-        header = ['date', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
+        header = ['date', 'year', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
 
         self.stats_writer.writerow(header)
 
@@ -442,7 +443,7 @@ class Dexcom():
             low = float(len(day[1]))/float(len(day[0])) * 100
             target = float(len(day[2]))/float(len(day[0]))*100
             high = float(len(day[3]))/float(len(day[0]))*100
-            self.stats_writer.writerow([day[4],ave,std,low,target,high])
+            self.stats_writer.writerow([day[4],day[4][:4],ave,std,low,target,high])
 
     def day_csv(self):
         """Export .csv that can be made into day boxplots directly in R."""
