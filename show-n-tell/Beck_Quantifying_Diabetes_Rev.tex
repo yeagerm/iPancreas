@@ -13,7 +13,7 @@
 \author{Jana E. Beck}
 \title{Quantifying Diabetes}
 \subtitle{Lessons learned from 100,000+ blood glucose readings}
-\date{May 8, 2012}
+\date{January 24, 2013}
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{multirow}
@@ -56,7 +56,7 @@
       \hskip .05in
       \includegraphics[width=.3\linewidth]{dexcom2.jpg}
       \hskip .05in
-      \includegraphics[width=.3\linewidth]{dexcom3.jpg}
+      \includegraphics[width=.3\linewidth]{dexcom3.jpg}\\
       the Dexcom Continuous Glucose Monitor\\
       (Seven+ generation, now on G4 Platinum)
     \end{center}
@@ -103,22 +103,13 @@
 \section{What I Did}
 
 \begin{frame}
-  \frametitle{My Experiment}
+  \frametitle{Impetus for the Experiment}
 
   \begin{itemize}
   \item first experience with Dexcom= \textit{shock}
   \item next= \textbf{frustration}
   \end{itemize}
   
-\end{frame}
-
-\begin{frame}
-  \frametitle{My Experiment, Cont'd}
-
-  \begin{hypothesis}
-    Carbohydrate restriction is an effective way to improve blood glucose outcomes.
-  \end{hypothesis}
-
 \end{frame}
 
 \begin{frame}
@@ -132,6 +123,15 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
 \end{quote} \hskip .5in ---
 \href{http://asweetlife.org/a-sweet-life-staff/featured/the-ketogenic-diet-and-peter-attias-war-on-insulin/24184/}{Dr. Peter Attia}
   
+\end{frame}
+
+\begin{frame}
+  \frametitle{My Experiment}
+
+  \begin{hypothesis}
+    Carbohydrate restriction is an effective way to improve blood glucose outcomes.
+  \end{hypothesis}
+
 \end{frame}
 
 \section{How I Did It}
@@ -148,7 +148,7 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
   \item in \href{http://www.r-project.org/}{R}:
     \begin{itemize}
     \item built-in non-parametric statistical functions
-    \item built-in plotting functions: boxplot(), etc.
+    \item vioplot() for violin plots
     \item \href{http://had.co.nz/ggplot2/}{ggplot2}
     \end{itemize}
   \end{itemize}
@@ -167,20 +167,10 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Comparing Years: Violin Plot}
-
-  \begin{center}
-  All of 2011 compared with all of 2012.
-    \includegraphics[height=0.85\textheight]{../img/dexcom_violin.pdf}
-  \end{center}
-
-\end{frame}
-
-\begin{frame}
   \frametitle{Visualizing Change: Daily Mean over Time}
 
   \begin{center}
-    \includegraphics[width=\textwidth]{mean_blood_glucose.jpg}
+    \includegraphics[height=.85\textheight]{../img/target.pdf}
   \end{center}
 
 \end{frame}
@@ -189,7 +179,7 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
   \frametitle{Visualizing Change: Daily Std. Deviation over Time}
   
   \begin{center}
-    \includegraphics[width=\textwidth]{standard_deviation.jpg}
+    \includegraphics[height=.85\textheight]{../img/std_dev.pdf}
   \end{center}
 
 \end{frame}
@@ -198,50 +188,25 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
   \frametitle{Visualizing Change: Daily \% Low over Time}
   
   \begin{center}
-    \includegraphics[width=\textwidth]{daily_low.jpg}
+    \includegraphics[height=.85\textheight]{../img/percent_low.pdf}
   \end{center}
 
 \end{frame}
 
-\begin{frame}
-  \frametitle{Visualizing Change: Daily Percentages over Time}
-  
-  \begin{center}
-    \includegraphics[width=\textwidth]{percentages.jpg}
-  \end{center}
-
-\end{frame}
+\section{The End}
 
 \begin{frame}
-  \frametitle{Statistical Significance}
+  \frametitle{Contact Info, etc.}
 
-  \begin{question}
-     Did adopting a carbohydrate-restricted diet starting January 1st, 2012 result in a statistically significant difference in
-     blood glucose?
-  \end{question}
-  Wilcoxon rank-sum test:
-  \begin{itemize}
-  \item similar to the Student's t-test, but for non-parametric (= non-normally-distributed) data
-  \item \textbf{\texttt{p-value < 2.2e-16}}
-  \item \textbf{Conclusion:} change in diet resulted in significant (negative) change in blood glucose values
-  \item estimate of the median of the difference between a sample from regular diet blood glucose data and a sample from low-carb
-    diet data is \textbf{about $-$19 mg/dL}
-  \end{itemize}
+  E-mail: \href{jana.eliz.beck@gmail.com}{\texttt{jana.eliz.beck@gmail.com}}\\
 
-\end{frame}
+  \vskip .1in
 
-\begin{frame}
-  \frametitle{Patterns: Time of Day}
-  
-  \begin{center}
-    \includegraphics[height=0.9\textheight]{../img/hour_heatmap.pdf}
-  \end{center}
-\end{frame}
+  Twitter: @iPancreas\\
 
-\begin{frame}
-  \frametitle{Thanks!}
+  \vskip .1in
 
-  Contact: \href{jana.eliz.beck@gmail.com}{\texttt{jana.eliz.beck@gmail.com}}\\
+  Blog-shaped thing: \href{http://jebeck.github.com/}{\texttt{http://jebeck.github.com/}}
 
   \vskip .5in
 
@@ -250,6 +215,34 @@ When I hear a physician saying to a type 1 diabetes patient, ``Go ahead and eat 
   \vskip .1in
 
   \small{(Description here: \href{http://jebeck.github.com/iPancreas/}{\texttt{http://jebeck.github.com/iPancreas/}})}
+
+\end{frame}
+
+\section{Bonuses}
+
+\begin{frame}
+  \frametitle{Bonus \#1: Heatmap!}
+  
+  \begin{center}
+    \includegraphics[height=0.9\textheight]{../img/hour_heatmap.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bonus \#2: Statistical Significance}
+
+  \begin{question}
+     Did adopting a carbohydrate-restricted diet starting January 1st, 2012 result in a statistically significant difference in
+     blood glucose?
+  \end{question}
+  Wilcoxon rank-sum test:
+  \begin{itemize}
+  \item similar to the Student's t-test, but for non-parametric (= non-normally-distributed) data
+  \item \textbf{\texttt{p-value < 2.2e-16}} (this is the lowest value R will output, I think)
+  \item \textbf{Conclusion:} change in diet resulted in significant (negative) change in blood glucose values
+  \item estimate of the median of the difference between a sample from regular diet blood glucose data and a sample from low-carb
+    diet data is \textbf{about $-$20 mg/dL}
+  \end{itemize}
 
 \end{frame}
 
