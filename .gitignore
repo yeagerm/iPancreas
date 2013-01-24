@@ -5,6 +5,7 @@ ping/
 endpoints/
 raw/
 img/
+to-R/
 *.pyc
 *.aux
 *.log
