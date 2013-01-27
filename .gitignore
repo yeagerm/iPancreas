@@ -4,11 +4,14 @@ events/
 ping/
 endpoints/
 raw/
+img/
+to-R/
 *.pyc
 *.aux
 *.log
 *.nav
 *.out
+*.rel
 *.snm
 *.synctex.gz
 *.toc
