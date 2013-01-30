@@ -5,12 +5,70 @@
 	<link href="img/favicon.ico" rel="shortcut icon" />
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.css" type="text/css" rel="stylesheet" media="screen" />
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <!-- Jasny Bootstrap Extensions -->
+    <link href="css/jasny-bootstrap.css" type="text/css" rel="stylesheet" media="screen" />
+    <script src="js/bootstrap-fileupload.js"></script>
+    <!-- End Jasny Extensions -->
+    <style type="text/css">
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 800px;
+      }
+    </style>
 </head>
 <body>
 <div class="hero-unit">
 	<h1>Welcome to iPancreas</h1>
 	<p>An Interactive Logbook for Becoming a Better Pancreas</p>
-</div></body>
+</div>
+<div class="container-narrow">
+	<form action="upload" method="post" enctype="multipart/form-data">
+        <legend>Start by uploading your data files...</legend>
+		<fieldset>
+            <h4 class="muted">Dexcom XML (.xml) or tab-delimited (.csv or .txt) file</h4>
+            <div class="fileupload fileupload-new well" data-provides="fileupload">
+                <div class="input-append">
+                    <span class="add-on"><span class="badge badge-important">1</span></span>
+                    <div class="uneditable-input"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">Select Dexcom File</span>
+                        <span class="fileupload-exists">Change</span>
+                        <input type="file" name="dex"/>
+                    </span>
+                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+                </div>
+            </div>
+            <h4 class="muted">Animas Ping blood glucose log as a .csv file</h4>
+            <div class="fileupload fileupload-new well" data-provides="fileupload">
+                <div class="input-append">
+                    <span class="add-on"><span class="badge badge-warning">2</span></span>
+                    <div class="uneditable-input"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">Select BG Log</span>
+                        <span class="fileupload-exists">Change</span>
+                        <input type="file" name="ping"/>
+                    </span>
+                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+                </div>
+            </div>
+            <h4 class="muted">your.flowingdata actions log as a .csv file</h4>
+            <div class="fileupload fileupload-new well" data-provides="fileupload">
+                <div class="input-append">
+                    <span class="add-on"><span class="badge badge-warning">3</span></span>
+                    <div class="uneditable-input"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+                    <span class="btn btn-file">
+                        <span class="fileupload-new">Select YFD File</span>
+                        <span class="fileupload-exists">Change</span>
+                        <input type="file" name="yfd"/>
+                    </span>
+                    <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-large pull-right" type="submit">Upload All</button>
+        </fieldset>
+    </form>
+</div>
+</body>
 </html>
