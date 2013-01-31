@@ -77,9 +77,9 @@ class Log():
 
 class YFD():
 
-    def __init__(self, csv_name):
+    def __init__(self, y):
 
-        self.reader = csv.reader(open(csv_name, 'rb'), delimiter='\t')
+        self.reader = y
 
     def get_timestamp(self, t_str):
         """Return time from YFD time string."""
@@ -753,7 +753,7 @@ def main():
 
     bolus_log = Log("bolus", days)
 
-    yfd = YFD(args.yfd_name)
+    yfd = YFD(csv.reader(open(args.yfd_name, 'rb'), delimiter='\t'))
 
     yfd.parse_yfd(carb_log, event_log, ex_log, hypo_log, bolus_log)
 
