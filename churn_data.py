@@ -651,11 +651,11 @@ class Dexcom():
 
 class Ping():
 
-    def __init__(self, csv_name):
+    def __init__(self, p):
 
         self.file_base = "ping/ping"
 
-        self.reader = csv.reader(open(csv_name, 'rb'))
+        self.reader = p
 
     def get_date(self, str):
 
@@ -722,7 +722,7 @@ def main():
 
     args = parser.parse_args()
 
-    p = Ping(args.ping_name)
+    p = Ping(csv.reader(open(args.ping_name, 'rb')))
 
     p.parse_ping()
 
