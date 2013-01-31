@@ -4,11 +4,11 @@ import csv
 class G4Reader():
 	"""Replicates the functionality of Dexcom.get_readings() in churn_data."""
 
-	def __init__(self, dex_name):
-		
-		with open(dex_name, 'rb') as f:
-			self.rdr = csv.reader(f, delimiter = '\t', quoting = csv.QUOTE_NONE)
-			self.readings = self.get_readings()
+	def __init__(self, dex):
+
+		self.rdr = dex
+
+		self.readings = self.get_readings()
 
 	def get_readings(self):
 

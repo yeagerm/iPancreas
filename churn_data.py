@@ -77,9 +77,9 @@ class Log():
 
 class YFD():
 
-    def __init__(self, csv_name):
+    def __init__(self, y):
 
-        self.reader = csv.reader(open(csv_name, 'rb'), delimiter='\t')
+        self.reader = y
 
     def get_timestamp(self, t_str):
         """Return time from YFD time string."""
@@ -353,17 +353,12 @@ class Dexcom():
 
         self.file_base = "dex/dex"
 
-        if filename.find('.xml') != -1:
-            self.file = open(filename, 'rU')
-            self.readings = self.get_readings()
-            self.ext = '.xml'
-        else:
-            platinum = G4(filename)
-            self.readings = platinum.readings
-            self.ext = '.csv'
+        self.filename = filename
+
+    def _make_stats_files(self):
 
         #TODO: make a 'to-R' directory if it doesn't exist (won't work otherwise)
-        new_filename = filename.split('/')[1]
+        new_filename = self.filename.split('/')[1]
 
         self.stats_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_stats.csv'), 'w'))
 
@@ -633,7 +628,9 @@ class Dexcom():
                 print_time = reading['DisplayTime']
 
             if self.get_date(reading) == last_day:
-                print >> xml_out, print_time + "," + reading['Value']
+                if last_day not in days:
+                    days.append(last_day)
+                print >> xml_out, print_time + "," + str(reading['Value'])
             else:
                 count += 1
                 last_day += datetime.timedelta(days=1)
@@ -654,11 +651,11 @@ class Dexcom():
 
 class Ping():
 
-    def __init__(self, csv_name):
+    def __init__(self, p):
 
         self.file_base = "ping/ping"
 
-        self.reader = csv.reader(open(csv_name, 'rb'))
+        self.reader = p
 
     def get_date(self, str):
 
@@ -725,11 +722,20 @@ def main():
 
     args = parser.parse_args()
 
-    p = Ping(args.ping_name)
+    p = Ping(csv.reader(open(args.ping_name, 'rb')))
 
     p.parse_ping()
 
     d = Dexcom(args.dex_name)
+
+    if args.dex_name.find('.xml') != -1:
+        d.file = open(args.dex_name, 'rU')
+        d.readings = d.get_readings()
+        d.ext = '.xml'
+    else:
+        platinum = G4(csv.reader(open(args.dex_name, 'rb'), delimiter='\t', quoting = csv.QUOTE_NONE))
+        d.readings = platinum.readings
+        d.ext = '.csv'
 
     if args.days != 0:
         tmp = d.logbook()
@@ -747,7 +753,7 @@ def main():
 
     bolus_log = Log("bolus", days)
 
-    yfd = YFD(args.yfd_name)
+    yfd = YFD(csv.reader(open(args.yfd_name, 'rb'), delimiter='\t'))
 
     yfd.parse_yfd(carb_log, event_log, ex_log, hypo_log, bolus_log)
 
