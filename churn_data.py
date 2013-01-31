@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup, Tag, NavigableString
-from bs4 import BeautifulSoup as BS
+from dexcom_g4_importer import G4Reader as G4
 import argparse
 import datetime
 import sys
@@ -349,23 +349,31 @@ class Carbs():
 
 class Dexcom():
 
-    def __init__(self, xml_name):
+    def __init__(self, filename):
 
         self.file_base = "dex/dex"
 
-        self.xml_file = open(xml_name, 'rU')
+        if filename.find('.xml') != -1:
+            self.file = open(filename, 'rU')
+            self.readings = self.get_readings()
+            self.ext = '.xml'
+        else:
+            platinum = G4(filename)
+            self.readings = platinum.readings
+            self.ext = '.csv'
 
-        self.stats_writer = csv.writer(open(xml_name.replace('.xml', '_stats.csv'), 'w'))
+        #TODO: make a 'to-R' directory if it doesn't exist (won't work otherwise)
+        new_filename = filename.split('/')[1]
 
-        self.day_writer = csv.writer(open(xml_name.replace('.xml','_day.csv'), 'w'))
+        self.stats_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_stats.csv'), 'w'))
 
-        self.bubble_writer = csv.writer(open(xml_name.replace('.xml', '_bubble.csv'), 'w'))
+        self.day_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext,'_day.csv'), 'w'))
 
-        self.day_heat_writer = csv.writer(open(xml_name.replace('.xml','_day_heatmap.csv'), 'w'))
+        self.bubble_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_bubble.csv'), 'w'))
 
-        self.time_heat_writer = csv.writer(open(xml_name.replace('.xml', '_time_heatmap.csv'), 'w'))
+        self.day_heat_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext,'_day_heatmap.csv'), 'w'))
 
-        self.readings = self.get_readings()
+        self.time_heat_writer = csv.writer(open('to-R/' + new_filename.replace(self.ext, '_time_heatmap.csv'), 'w'))
 
     def get_date(self, reading):
         """Return the date from a Dexcom XML object representing a single BG reading."""
@@ -375,8 +383,12 @@ class Dexcom():
     def get_time(self, reading):
         """Return the hour of the day as a 24-hr clock integer from a Dexcom XML object representing a single BG reading."""
 
-        t = datetime.datetime.strptime(reading['DisplayTime'][:-4], "%Y-%m-%d %H:%M:%S")
-
+        if reading['DisplayTime'][-4].find('.') != -1:
+            # old Dexcom files have %H:%M:%S.xxx
+            t = datetime.datetime.strptime(reading['DisplayTime'][:-4], "%Y-%m-%d %H:%M:%S")
+        else:
+            # new Dexcom files stop at seconds
+            t = datetime.datetime.strptime(reading['DisplayTime'], "%Y-%m-%d %H:%M:%S")
         return t.hour
 
     def get_date_str(self, reading):
@@ -387,7 +399,7 @@ class Dexcom():
     def get_readings(self):
         """Return array of XML objects each representing a blood glucose reading."""
 
-        xsoup = BeautifulSoup(self.xml_file, "xml")
+        xsoup = BeautifulSoup(self.file, "xml")
         return xsoup.findAll('Sensor')
 
     def stats(self):
@@ -400,30 +412,31 @@ class Dexcom():
         days[count] = ([],[],[],[],self.get_date_str(self.readings[0]))
 
         for reading in self.readings:
+            value = int(reading['Value'])
             if self.get_date(reading) == last_day:
-                days[count][0].append(int(reading['Value']))
-                if int(reading['Value']) <= 65:
-                    days[count][1].append(int(reading['Value']))
-                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
-                    days[count][2].append(int(reading['Value']))
-                elif int(reading['Value']) > 140:
-                    days[count][3].append(int(reading['Value']))
+                days[count][0].append(value)
+                if value <= 65:
+                    days[count][1].append(value)
+                elif value > 65 and value <= 140:
+                    days[count][2].append(value)
+                elif value > 140:
+                    days[count][3].append(value)
                 else:
                     print "I can't classify this BG reading: %s!" %reading['Value']
             else:
                 count += 1
-                days[count] = ([int(reading['Value'])],[],[],[],self.get_date_str(reading))
-                if int(reading['Value']) <= 65:
-                    days[count][1].append(int(reading['Value']))
-                elif int(reading['Value']) > 65 and int(reading['Value']) <= 140:
-                    days[count][2].append(int(reading['Value']))
-                elif int(reading['Value']) > 140:
-                    days[count][3].append(int(reading['Value']))
+                days[count] = ([value],[],[],[],self.get_date_str(reading))
+                if value <= 65:
+                    days[count][1].append(value)
+                elif value > 65 and value <= 140:
+                    days[count][2].append(value)
+                elif value > 140:
+                    days[count][3].append(value)
                 else:
                     print "I can't classify this BG reading: %s!" %reading['Value']
                 last_day = self.get_date(reading)
 
-        header = ['date', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
+        header = ['date', 'year', 'average', 'standard_deviation', 'percentage_low', 'percentage_target', 'percentage_high']
 
         self.stats_writer.writerow(header)
 
@@ -433,7 +446,7 @@ class Dexcom():
             low = float(len(day[1]))/float(len(day[0])) * 100
             target = float(len(day[2]))/float(len(day[0]))*100
             high = float(len(day[3]))/float(len(day[0]))*100
-            self.stats_writer.writerow([day[4],ave,std,low,target,high])
+            self.stats_writer.writerow([day[4],day[4][:4],ave,std,low,target,high])
 
     def day_csv(self):
         """Export .csv that can be made into day boxplots directly in R."""
@@ -612,14 +625,30 @@ class Dexcom():
         days = [last_day]
 
         for reading in self.readings:
+            # for old Dexcom .xml exports
+            if reading['DisplayTime'].find('.') != -1:
+                print_time = reading['DisplayTime'][:-4]
+            # for new Dexcom .csv exports
+            else:
+                print_time = reading['DisplayTime']
+
             if self.get_date(reading) == last_day:
-                print >> xml_out, reading['DisplayTime'][:-4] + "," + reading['Value']
+                print >> xml_out, print_time + "," + reading['Value']
             else:
                 count += 1
-                last_day = self.get_date(reading)
-                xml_out = open(self.file_base+str(count)+'.txt','w')
+                last_day += datetime.timedelta(days=1)
+                new_reading_date = self.get_date(reading)
+                if last_day == new_reading_date:
+                    xml_out = open(self.file_base+str(count)+'.txt','w')
+                    days.append(last_day)
+                else:
+                    while last_day != new_reading_date:
+                        count += 1
+                        xml_out = open(self.file_base+str(count)+'.txt','w')
+                        days.append(last_day)
+                        last_day += datetime.timedelta(days=1)
+                
                 print >> xml_out, reading['DisplayTime'][:-4] + "," + reading['Value']
-                days.append(last_day)
 
         return days
 
@@ -677,7 +706,7 @@ class Ping():
 def insert_num_days(n):
     """Insert the number of days of data into logbook.html where required."""
 
-    soup = BS(open("logbook.html",'rU'))
+    soup = BeautifulSoup(open("logbook.html",'rU'))
 
     body = soup.body
 
